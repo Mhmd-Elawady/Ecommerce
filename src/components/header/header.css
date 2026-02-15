@@ -102,4 +102,114 @@
   border-radius: 50%;
 }
 
+.btm_header {
+  background: var(--main_color);
+}
 
+.btm_header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btm_header .nav {
+  display: flex;
+  align-items: center;
+  gap: 50px;
+  height: 50px;
+}
+
+.btm_header .category_nav {
+  width: 220px;
+  height: 100%;
+  position: relative;
+}
+
+.btm_header .category_btn {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--main_color);
+  padding: 0 15px;
+  cursor: pointer;
+}
+
+.btm_header .category_btn svg {
+  fill: var(--white_color);
+  font-size: 18px;
+}
+
+.btm_header .category_btn p {
+  color: var(--white_color);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.btm_header .category_nav_links {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: var(--white_color);
+  border: 1px solid var(--border_color);
+  border-top: 0;
+  display: flex;
+  flex-direction: column;
+  max-height: 400px;
+  overflow-y: auto;
+  clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+  transition: 0.3s ease-in-out;
+  z-index: 1000;
+}
+
+.btm_header .category_nav_links.active {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+}
+
+.btm_header .category_nav_links a {
+  padding: 14px 10px;
+  border-bottom: 1px solid var(--border_color);
+  font-size: 14px;
+  color: var(--color_heading);
+}
+
+.btm_header .category_nav_links a:last-child {
+  border-bottom: 0;
+}
+
+.btm_header .nav_links {
+  display: flex;
+  height: 100%;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.btm_header .nav_links li {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 25px;
+}
+
+.btm_header .nav_links li.active {
+  background: #0079ca;
+}
+
+.btm_header .nav_links li a {
+  color: var(--white_color);
+  font-size: 15px;
+}
+
+.btm_header .header_icon {
+  display: flex;
+  gap: 20px;
+}
+
+.btm_header .header_icon svg {
+  font-size: 22px;
+  fill: var(--white_color);
+  cursor: pointer;
+}
