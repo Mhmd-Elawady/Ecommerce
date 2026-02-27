@@ -35,7 +35,7 @@ function BottomHeader() {
               onClick={() => setIsCategoryOpen(!isCategoryOpen)}
             >
               <IoMenu />
-              <p>Browse Category</p>
+              <p> Category</p>
               <IoMdArrowDropdown />
             </div>
 

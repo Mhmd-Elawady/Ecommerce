@@ -1,18 +1,23 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import HeroSlider from "../../components/HeroSlider";
-import SlideProduct from "../../components/slideproducts/SlideProduct";
-import './home.css';
+
+import "./home.css";
+import SlideProduct from "../../components/slideProducts/SlideProduct";
+import SlideProductLoading from "../../components/slideproducts/SlideProductLoading";
+import PageTransition from "../../components/PageTransition";
+import Navbar from "../Navbar/Navbar";
 const categories = [
   "smartphones",
   "mobile-accessories",
   "laptops",
   "tablets",
-  "mens-watches",
+  "sunglasses",
   "sports-accessories",
 ];
 
 function Home() {
   const [products, setProducts] = useState({});
+
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -31,7 +36,7 @@ function Home() {
         const productsData = Object.assign({}, ...results);
         setProducts(productsData);
       } catch (error) {
-        console.error("error", error);
+        console.error("Erorr Fetching", error);
       } finally {
         setLoading(false);
       }
@@ -41,21 +46,24 @@ function Home() {
   }, []);
 
   return (
-    <>
-      <HeroSlider />
-
-      {loading ? (
-        <p>Loading.....</p>
-      ) : (
-        categories.map((category) => (
-          <SlideProduct
-            key={category}
-            data={products[category]}
-            title={category.replace('-' , ' ')}
-          />
-        ))
-      )}
-    </>
+    <PageTransition>
+      <div>
+        <HeroSlider />
+        
+        {loading
+          ? categories.map((category) => <SlideProductLoading key={category} />)
+          : categories.map((category) => (
+              <SlideProduct
+                key={category}
+                data={products[category]}
+                title={category.replace("-", " ")}
+              />
+            ))}
+             <Navbar />
+      </div>
+      
+    </PageTransition>
+   
   );
 }
 

@@ -1,0 +1,572 @@
+/* ========================================
+   CHECKOUT / ORDER SUMMARY — Redesigned in 'About' Page Style
+   Aesthetic: Dark Cinematic / Red Accent / Premium Glass
+   ======================================== */
+
+/* ----------------------------------------
+   1. CSS Variables (Inspired by About Page)
+   ---------------------------------------- */
+:root {
+  --primary:        #dc2626;        /* Red from About page */
+  --primary-light:  #ec4899;        /* Pinkish gradient end */
+  --primary-rgb:     220, 38, 38;
+
+  --green:          #12B76A;        /* Keep for free shipping */
+  --green-rgb:      18, 183, 106;
+
+  --ink:            #FFFFFF;
+  --ink-soft:       #d1d5db;
+  --ink-muted:      #9ca3af;
+
+  --canvas:         #0a0a0a;         /* Deep black background */
+  --surface:        #1a1a1a;         /* Dark gray surface */
+  --surface-alt:    #2d2d2d;         /* Lighter gray for cards */
+
+  --border:         rgba(255, 255, 255, 0.1);
+  --border-strong:  rgba(255, 255, 255, 0.15);
+
+  --shadow-sm:      0 1px 4px rgba(0, 0, 0, 0.3);
+  --shadow-md:      0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg:      0 20px 50px rgba(0, 0, 0, 0.5);
+  --shadow-primary: 0 8px 28px rgba(var(--primary-rgb), 0.3);
+
+  --ease:           cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring:    cubic-bezier(0.16, 1, 0.3, 1);
+
+  --font-display:   'Cabinet Grotesk', sans-serif;
+  --font-body:      'Satoshi', sans-serif;
+
+  --radius-sm:      6px;
+  --radius:         14px;
+  --radius-lg:      22px;
+  --radius-pill:    100px;
+}
+
+/* ----------------------------------------
+   2. Base
+   ---------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-body);
+  background: linear-gradient(135deg, var(--canvas) 0%, #111111 100%);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* ----------------------------------------
+   3. Checkout Page
+   ---------------------------------------- */
+.checkout {
+  margin: 64px auto;
+  display: flex;
+  justify-content: center;
+  padding: 0 20px;
+}
+
+/* ----------------------------------------
+   4. Order Summary Card
+   ---------------------------------------- */
+.checkout .ordersummary {
+  width: 100%;
+  max-width: 500px;
+  background: linear-gradient(145deg, var(--surface) 0%, #2d2d2d 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+  position: relative;
+  backdrop-filter: blur(10px);
+}
+
+/* Top gradient bar - Red to pink */
+.checkout .ordersummary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+}
+
+/* ----------------------------------------
+   5. Summary Header
+   ---------------------------------------- */
+.checkout .ordersummary h1 {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.4px;
+  padding: 28px 28px 20px;
+  margin: 0;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.checkout .ordersummary h1::before {
+  content: '🛒';
+  font-size: 1.1rem;
+  color: var(--primary);
+}
+
+/* ----------------------------------------
+   6. Item List
+   ---------------------------------------- */
+.checkout .items {
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 0 28px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) transparent;
+}
+
+.checkout .items::-webkit-scrollbar {
+  width: 4px;
+}
+.checkout .items::-webkit-scrollbar-track { background: transparent; }
+.checkout .items::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: var(--radius-pill);
+}
+.checkout .items::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-light);
+}
+
+/* ----------------------------------------
+   7. Cart Item
+   ---------------------------------------- */
+.checkout .items .item_cart {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.2s var(--ease);
+  position: relative;
+}
+
+.checkout .items .item_cart:last-child {
+  border-bottom: none;
+}
+
+/* Hover highlight band - More subtle in dark mode */
+.checkout .items .item_cart::before {
+  content: '';
+  position: absolute;
+  inset: 4px -16px;
+  border-radius: var(--radius);
+  background: rgba(220, 38, 38, 0.05);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.checkout .items .item_cart:hover::before {
+  opacity: 1;
+}
+
+.checkout .items .item_cart > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Image + Name group */
+.checkout .items .item_cart .image_name {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Image container */
+.checkout .items .item_cart .img_item {
+  width: 72px;
+  height: 72px;
+  min-width: 72px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: box-shadow 0.25s var(--ease), border-color 0.25s var(--ease);
+}
+
+.checkout .items .item_cart:hover .img_item {
+  border-color: var(--primary);
+  box-shadow: 0 4px 14px rgba(var(--primary-rgb), 0.2);
+}
+
+.checkout .items .item_cart img {
+  width: auto;
+  height: 52px;
+  max-width: 60px;
+  object-fit: contain;
+  transition: transform 0.35s var(--ease-spring);
+}
+
+.checkout .items .item_cart:hover img {
+  transform: scale(1.08);
+}
+
+/* Product name */
+.checkout .items .item_cart h4 {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.4;
+  margin: 0 0 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Item unit price */
+.checkout .items .item_cart .unit_price {
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  font-weight: 500;
+}
+
+/* Right side: quantity + price + delete */
+.checkout .items .item_cart .item_right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Item total price - Now in red */
+.checkout .items .item_cart .item_price {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* ----------------------------------------
+   8. Quantity Control
+   ---------------------------------------- */
+.checkout .items .item_cart .quantity_control {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.3);
+  box-shadow: var(--shadow-sm);
+}
+
+.checkout .items .item_cart .quantity_control button {
+  width: 30px;
+  height: 30px;
+  border: none;
+  background: var(--surface-alt);
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s var(--ease), color 0.2s var(--ease);
+  outline: none;
+}
+
+.checkout .items .item_cart .quantity_control button:hover {
+  background: var(--primary);
+  color: var(--canvas);
+}
+
+.checkout .items .item_cart .quantity_control .quantity {
+  min-width: 38px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: rgba(0, 0, 0, 0.3);
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  user-select: none;
+}
+
+/* ----------------------------------------
+   9. Delete Button
+   ---------------------------------------- */
+.checkout .items .item_cart .delete_item {
+  outline: none;
+  border: none;
+  background: transparent;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s var(--ease), transform 0.2s var(--ease-spring);
+  color: var(--primary);
+}
+
+.checkout .items .item_cart .delete_item:hover {
+  background: rgba(var(--primary-rgb), 0.1);
+  transform: scale(1.12);
+}
+
+.checkout .items .item_cart .delete_item svg {
+  font-size: 18px;
+  fill: var(--primary);
+  display: block;
+}
+
+/* ----------------------------------------
+   10. Order Summary Footer
+   ---------------------------------------- */
+.checkout .bottom_summary {
+  border-top: 1px solid var(--border);
+  padding: 24px 28px 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.2) 100%);
+}
+
+/* Summary rows */
+.checkout .bottom_summary .shop_table {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.checkout .bottom_summary .shop_table p {
+  font-size: 0.95rem;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.checkout .bottom_summary .shop_table .value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Free shipping tag */
+.checkout .bottom_summary .shop_table .free_tag {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--green);
+  background: rgba(var(--green-rgb), 0.1);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+}
+
+/* Total row */
+.checkout .bottom_summary .total_row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0 20px;
+  margin-top: 6px;
+}
+
+.checkout .bottom_summary .total_row .total_label {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.checkout .bottom_summary .total_checkout {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.5px;
+}
+
+/* ----------------------------------------
+   11. Checkout Button - Redesign with red
+   ---------------------------------------- */
+.checkout .bottom_summary .button_div {
+  border-top: 1px solid var(--border);
+  padding: 24px 0 28px;
+}
+
+.checkout .bottom_summary .button_div button {
+  width: 100%;
+  position: relative;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+  color: var(--ink);
+  border: none;
+  padding: 16px 0;
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.25s var(--ease-spring), box-shadow 0.25s var(--ease);
+  box-shadow: var(--shadow-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* Shimmer sweep on hover */
+.checkout .bottom_summary .button_div button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  transition: left 0.5s var(--ease);
+  pointer-events: none;
+}
+
+.checkout .bottom_summary .button_div button:hover::before {
+  left: 150%;
+}
+
+.checkout .bottom_summary .button_div button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 36px rgba(var(--primary-rgb), 0.4);
+}
+
+.checkout .bottom_summary .button_div button:active {
+  transform: translateY(-1px);
+}
+
+/* Arrow icon in button */
+.checkout .bottom_summary .button_div button::after {
+  content: '→';
+  font-size: 1.15rem;
+  transition: transform 0.3s var(--ease-spring);
+}
+
+.checkout .bottom_summary .button_div button:hover::after {
+  transform: translateX(5px);
+}
+
+/* Secure checkout note */
+.checkout .bottom_summary .secure_note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--ink-muted);
+  font-weight: 500;
+  margin-top: 12px;
+  letter-spacing: 0.3px;
+}
+
+.checkout .bottom_summary .secure_note::before {
+  content: '🔒';
+  font-size: 0.75rem;
+  color: var(--primary);
+}
+
+/* ----------------------------------------
+   12. Empty Cart State
+   ---------------------------------------- */
+.checkout .items .empty_cart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 0;
+  gap: 12px;
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+.checkout .items .empty_cart svg {
+  font-size: 48px;
+  fill: rgba(220, 38, 38, 0.2);
+  margin-bottom: 8px;
+}
+
+.checkout .items .empty_cart p {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* ----------------------------------------
+   13. Responsive (Keep your existing)
+   ---------------------------------------- */
+@media (max-width: 600px) {
+  .checkout {
+    margin: 32px auto;
+    padding: 0 12px;
+  }
+
+  .checkout .ordersummary {
+    border-radius: var(--radius);
+  }
+
+  .checkout .ordersummary h1 {
+    font-size: 1.15rem;
+    padding: 22px 20px 16px;
+  }
+
+  .checkout .items {
+    padding: 0 20px;
+    max-height: 300px;
+  }
+
+  .checkout .items .item_cart .img_item {
+    width: 58px;
+    height: 58px;
+    min-width: 58px;
+  }
+
+  .checkout .items .item_cart img {
+    height: 42px;
+  }
+
+  .checkout .items .item_cart h4 {
+    font-size: 0.82rem;
+  }
+
+  .checkout .bottom_summary {
+    padding: 20px 20px 0;
+  }
+
+  .checkout .bottom_summary .button_div {
+    padding: 20px 0 24px;
+  }
+
+  .checkout .bottom_summary .button_div button {
+    font-size: 0.95rem;
+    padding: 14px 0;
+  }
+
+  .checkout .bottom_summary .total_checkout {
+    font-size: 1.3rem;
+  }
+}

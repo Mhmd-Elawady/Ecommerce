@@ -4,7 +4,7 @@ import Product from './Product';
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
 import './slideProduct.css';
-
+import './Slider.css'
 function SlideProduct({ data, title }) {
   if (!data || data.length === 0) return null;
 

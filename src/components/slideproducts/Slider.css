@@ -1,0 +1,931 @@
+/* ========================================
+   SLIDE PRODUCTS — Dark Theme with Red Accents
+   Premium Redesign - Black & Red Edition
+   ======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+/* ----------------------------------------
+   1. CSS Variables - Red & Black Theme
+   ---------------------------------------- */
+:root {
+  /* Red Accents - Replacing Blue */
+  --red:          #dc2626;
+  --red-light:    #ef4444;
+  --red-dark:     #b91c1c;
+  --red-rgb:      220, 38, 38;
+  --red-gradient: linear-gradient(90deg, #dc2626, #ef4444);
+  --red-vertical: linear-gradient(180deg, #dc2626, #ec4899);
+
+  /* Gold Accent - Keeping for contrast */
+  --gold:          #F5A623;
+  --gold-rgb:      245, 166, 35;
+
+  /* Dark Theme Colors - Black & Grays */
+  --ink:           #ffffff;           /* White text */
+  --ink-soft:      #e5e7eb;           /* Light gray */
+  --ink-muted:     #9ca3af;            /* Medium gray */
+  --ink-dark:      #d1d5db;            /* Soft white */
+
+  /* Background Colors - Dark */
+  --canvas:        #0a0a0a;            /* Pure black */
+  --surface:       #1a1a1a;            /* Dark gray */
+  --surface-alt:   #2d2d2d;            /* Lighter gray */
+  --surface-dark:  rgba(0, 0, 0, 0.3);
+
+  /* Borders */
+  --border:        rgba(220, 38, 38, 0.15);
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-light:  1px solid rgba(255, 255, 255, 0.1);
+  --border-red:    rgba(220, 38, 38, 0.3);
+
+  /* Shadows */
+  --shadow-sm:     0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md:     0 10px 28px rgba(0, 0, 0, 0.4);
+  --shadow-lg:     0 24px 56px rgba(0, 0, 0, 0.5);
+  --shadow-red:    0 12px 32px rgba(220, 38, 38, 0.25);
+  --shadow-card:   0 16px 40px rgba(220, 38, 38, 0.2);
+
+  /* Transitions */
+  --ease:          cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring:   cubic-bezier(0.16, 1, 0.3, 1);
+  --transition:    all 0.35s var(--ease);
+
+  /* Typography */
+  --font-display:  'Fraunces', serif;
+  --font-body:     'Plus Jakarta Sans', sans-serif;
+
+  /* Border Radius */
+  --radius-sm:     8px;
+  --radius:        16px;
+  --radius-lg:     24px;
+  --radius-pill:   100px;
+}
+
+/* ----------------------------------------
+   2. Base
+   ---------------------------------------- */
+*, *::before, *::after { 
+  box-sizing: border-box; 
+}
+
+body {
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  background: var(--canvas);
+  color: var(--ink-soft);
+}
+
+::-webkit-scrollbar { 
+  width: 5px; 
+}
+
+::-webkit-scrollbar-track { 
+  background: var(--surface); 
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--red-light);
+  border-radius: var(--radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--red);
+}
+
+/* ----------------------------------------
+   3. Section Wrapper
+   ---------------------------------------- */
+.slide_products {
+  width: 100%;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+  min-height: 500px;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  padding: 80px 0 100px;
+}
+
+/* Animated dot-grid texture - Red version */
+.slide_products::before {
+  content: '';
+  position: absolute;
+  inset: -40%;
+  background-image:
+    radial-gradient(circle, rgba(220, 38, 38, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: driftGrid 28s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Top-right color wash - Red */
+.slide_products::after {
+  content: '';
+  position: absolute;
+  top: -80px;
+  right: -80px;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(220, 38, 38, 0.06) 0%,
+    transparent 68%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Red accent line on top */
+.slide_products .section_accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #dc2626, #ec4899, transparent);
+  z-index: 1;
+}
+
+@keyframes driftGrid {
+  0%   { transform: translate(0, 0); }
+  50%  { transform: translate(24px, 24px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* ----------------------------------------
+   4. Container
+   ---------------------------------------- */
+.container {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 0 40px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ----------------------------------------
+   5. Section Header
+   ---------------------------------------- */
+.top_slide {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 48px;
+  position: relative;
+}
+
+/* Left text block */
+.top_slide .top_slide_text {
+  flex: 1;
+}
+
+/* Eyebrow label - Red */
+.top_slide .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  color: var(--red);
+  margin-bottom: 14px;
+  opacity: 0;
+  animation: riseIn 0.8s var(--ease-spring) 0.1s forwards;
+}
+
+.top_slide .eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--red) 0%, var(--red-light) 100%);
+  border-radius: var(--radius-pill);
+}
+
+/* Heading - White gradient */
+.top_slide h2 {
+  font-family: var(--font-display);
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: transparent;
+  line-height: 1.1;
+  letter-spacing: -1.5px;
+  margin-bottom: 14px;
+  position: relative;
+  display: inline-block;
+  opacity: 0;
+  animation: riseIn 0.8s var(--ease-spring) 0.25s forwards;
+  background: linear-gradient(135deg, #fff 0%, #e5e7eb 50%, #9ca3af 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Underline bar - Red */
+.top_slide h2::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 0;
+  width: 52px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--red) 0%, var(--red-light) 100%);
+  border-radius: var(--radius-pill);
+  transition: width 0.45s var(--ease-spring);
+}
+
+.top_slide:hover h2::after {
+  width: 110px;
+}
+
+/* Subtext */
+.top_slide p {
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--ink-muted);
+  max-width: 560px;
+  font-weight: 400;
+  opacity: 0;
+  animation: riseIn 0.8s var(--ease-spring) 0.4s forwards;
+}
+
+/* "View all" link - Red */
+.top_slide .view_all {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--red);
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  padding: 11px 22px;
+  border: 1.5px solid rgba(220, 38, 38, 0.2);
+  border-radius: var(--radius-pill);
+  background: rgba(220, 38, 38, 0.05);
+  transition: var(--transition);
+  opacity: 0;
+  animation: riseIn 0.8s var(--ease-spring) 0.5s forwards;
+  backdrop-filter: blur(10px);
+}
+
+.top_slide .view_all::after {
+  content: '→';
+  transition: transform 0.3s var(--ease-spring);
+}
+
+.top_slide .view_all:hover {
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--canvas);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-red);
+}
+
+.top_slide .view_all:hover::after {
+  transform: translateX(4px);
+}
+
+/* ----------------------------------------
+   6. Slick Slider Overrides
+   ---------------------------------------- */
+.slick-slider {
+  position: relative;
+}
+
+.slick-list {
+  margin: 0 -12px;
+  padding: 16px 0 48px;
+  overflow: hidden;
+}
+
+.slick-slide {
+  padding: 0 12px;
+}
+
+.slick-slide > div {
+  animation: riseIn 0.7s var(--ease-spring) forwards;
+  opacity: 0;
+  animation-delay: calc(0.08s * var(--slide-index, 1));
+}
+
+/* ----------------------------------------
+   7. Product Card - Dark Theme
+   ---------------------------------------- */
+.slide_products .product-card {
+  background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.4s var(--ease-spring), box-shadow 0.4s var(--ease), border-color 0.3s var(--ease);
+  height: 100%;
+}
+
+/* Red accent line on left */
+.slide_products .product-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, #dc2626, #ec4899);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 3;
+}
+
+/* Hover lift */
+.slide_products .product-card:hover {
+  transform: translateY(-10px);
+  box-shadow: var(--shadow-card);
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+.slide_products .product-card:hover::before {
+  opacity: 1;
+}
+
+.slide_products .product-card:active {
+  transform: translateY(-4px) scale(0.99);
+}
+
+/* ----------------------------------------
+   8. Product Image Area
+   ---------------------------------------- */
+.slide_products .product-img-wrap {
+  position: relative;
+  width: 100%;
+  height: 240px;
+  background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%);
+  overflow: hidden;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Inner shine */
+.slide_products .product-img-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(220, 38, 38, 0.05) 0%,
+    transparent 50%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Red accent line on top */
+.slide_products .product-img-wrap::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #dc2626, #ec4899, transparent);
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.slide_products .product-card:hover .product-img-wrap::before {
+  opacity: 1;
+}
+
+.slide_products .product-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.55s var(--ease-spring);
+  display: block;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+.slide_products .product-card:hover .product-image {
+  transform: scale(1.07);
+}
+
+/* Wishlist icon - Red theme */
+.slide_products .wish_btn {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 3;
+  cursor: pointer;
+  transition: var(--transition);
+  opacity: 0;
+  transform: scale(0.7);
+}
+
+.slide_products .product-card:hover .wish_btn {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.slide_products .wish_btn:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+}
+
+.slide_products .wish_btn svg {
+  width: 16px;
+  height: 16px;
+  fill: #fff;
+  transition: fill 0.2s;
+}
+
+.slide_products .wish_btn:hover svg {
+  fill: white;
+}
+
+/* ----------------------------------------
+   9. Product Badge - Red
+   ---------------------------------------- */
+.slide_products .product-badge {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  padding: 5px 12px;
+  background: rgba(220, 38, 38, 0.15);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--radius-pill);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  z-index: 3;
+  transition: var(--transition);
+}
+
+.slide_products .product-card:hover .product-badge {
+  background: #dc2626;
+  color: var(--canvas);
+  border-color: #dc2626;
+  box-shadow: var(--shadow-red);
+}
+
+/* Sale badge variant */
+.slide_products .product-badge.sale {
+  background: rgba(245, 166, 35, 0.15);
+  color: var(--gold);
+  border-color: rgba(245, 166, 35, 0.3);
+}
+
+.slide_products .product-card:hover .product-badge.sale {
+  background: var(--gold);
+  color: #0a0a0a;
+  border-color: var(--gold);
+  box-shadow: 0 8px 20px rgba(245, 166, 35, 0.3);
+}
+
+/* ----------------------------------------
+   10. Product Info - Dark Theme
+   ---------------------------------------- */
+.slide_products .product-info {
+  padding: 22px 20px 20px;
+  background: transparent;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Category label */
+.slide_products .product-category {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--ink-muted);
+}
+
+/* Title - White */
+.slide_products .product-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.35;
+  letter-spacing: -0.3px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.25s var(--ease);
+  flex: 1;
+}
+
+.slide_products .product-card:hover .product-title {
+  color: #dc2626;
+}
+
+/* Description */
+.slide_products .product-description {
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--ink-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-weight: 400;
+}
+
+/* Rating stars - Red */
+.slide_products .product-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+  font-weight: 500;
+}
+
+.slide_products .product-rating .stars {
+  display: flex;
+  gap: 1px;
+}
+
+.slide_products .product-rating .stars span {
+  color: #dc2626;
+  font-size: 0.85rem;
+}
+
+/* Price row */
+.slide_products .price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.slide_products .product-price {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #dc2626;
+  letter-spacing: -0.5px;
+  background: linear-gradient(135deg, #dc2626, #ef4444);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.slide_products .product-old-price {
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+  text-decoration: line-through;
+  font-weight: 400;
+  margin-left: 4px;
+}
+
+/* Quick add button - Red */
+.slide_products .quick_add {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #dc2626;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.3s var(--ease-spring), box-shadow 0.3s var(--ease);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.3);
+  flex-shrink: 0;
+  transform: scale(0.75);
+  opacity: 0;
+}
+
+.slide_products .product-card:hover .quick_add {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.slide_products .quick_add:hover {
+  transform: scale(1.12);
+  box-shadow: 0 8px 22px rgba(220, 38, 38, 0.5);
+}
+
+.slide_products .quick_add:active {
+  transform: scale(0.95);
+}
+
+.slide_products .quick_add svg {
+  width: 16px;
+  height: 16px;
+  fill: white;
+}
+
+/* ----------------------------------------
+   11. Slick Navigation Arrows - Red
+   ---------------------------------------- */
+.slick-prev,
+.slick-next {
+  width: 48px !important;
+  height: 48px !important;
+  background: #1a1a1a !important;
+  border-radius: 50% !important;
+  box-shadow: var(--shadow-md) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  z-index: 10;
+  transition: all 0.3s var(--ease-spring) !important;
+}
+
+.slick-prev { left: -16px !important; }
+.slick-next { right: -16px !important; }
+
+.slick-prev:hover,
+.slick-next:hover {
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+  transform: scale(1.1) !important;
+  box-shadow: var(--shadow-red) !important;
+}
+
+.slick-prev::before,
+.slick-next::before {
+  color: #fff !important;
+  font-size: 18px !important;
+  opacity: 1 !important;
+  transition: color 0.2s !important;
+}
+
+.slick-prev:hover::before,
+.slick-next:hover::before {
+  color: white !important;
+}
+
+/* ----------------------------------------
+   12. Slick Pagination Dots - Red
+   ---------------------------------------- */
+.slick-dots {
+  bottom: -8px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.slick-dots li {
+  margin: 0 !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+.slick-dots li button {
+  width: 8px;
+  height: 8px;
+  padding: 0 !important;
+}
+
+.slick-dots li button::before {
+  content: '' !important;
+  width: 8px;
+  height: 8px;
+  background: var(--ink-muted);
+  opacity: 0.25;
+  border-radius: var(--radius-pill);
+  transition: all 0.35s var(--ease-spring);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.slick-dots li.slick-active button::before {
+  width: 24px;
+  background: #dc2626;
+  opacity: 1;
+}
+
+/* ----------------------------------------
+   13. Loading State - Red
+   ---------------------------------------- */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 420px;
+  gap: 18px;
+  background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%);
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.loading-container p {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  color: var(--ink-muted);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.loading-spinner {
+  width: 38px;
+  height: 38px;
+  border: 3px solid rgba(220, 38, 38, 0.1);
+  border-top-color: #dc2626;
+  border-radius: 50%;
+  animation: spin 0.85s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ----------------------------------------
+   14. Skeleton Cards - Dark Theme
+   ---------------------------------------- */
+.skeleton-card {
+  background: linear-gradient(145deg, #1a1a1a 0%, #2d2d2d 100%);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.skeleton-img {
+  width: 100%;
+  height: 240px;
+  background: linear-gradient(90deg, #1a1a1a 25%, #2d2d2d 50%, #1a1a1a 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.skeleton-text {
+  margin: 20px;
+  height: 16px;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(90deg, #1a1a1a 25%, #2d2d2d 50%, #1a1a1a 75%);
+  background-size: 600px 100%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+.skeleton-text.short { width: 55%; margin-top: 10px; height: 12px; }
+.skeleton-text.price { width: 35%; margin-top: 16px; height: 20px; }
+
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position:  600px 0; }
+}
+
+/* ----------------------------------------
+   15. Animations
+   ---------------------------------------- */
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ----------------------------------------
+   16. Responsive
+   ---------------------------------------- */
+@media (max-width: 1200px) {
+  .top_slide h2 { font-size: 2.4rem; }
+  .slide_products .product-img-wrap { height: 220px; }
+}
+
+@media (max-width: 992px) {
+  .slide_products { padding: 60px 0 80px; }
+  .top_slide h2 { font-size: 2rem; letter-spacing: -0.8px; }
+  .top_slide p { font-size: 0.95rem; }
+  .slick-prev { left: -10px !important; }
+  .slick-next { right: -10px !important; }
+}
+
+@media (max-width: 768px) {
+  .slide_products { padding: 48px 0 72px; }
+
+  .container { padding: 0 20px; }
+
+  .top_slide {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+
+  .top_slide h2 {
+    font-size: 1.85rem;
+    letter-spacing: -0.6px;
+  }
+
+  .top_slide h2::after {
+    left: 0;
+  }
+
+  .top_slide .view_all { align-self: flex-start; }
+
+  .slide_products .product-img-wrap { height: 200px; }
+  .slide_products .product-title { font-size: 1rem; }
+  .slide_products .product-price { font-size: 1.2rem; }
+
+  .slick-prev,
+  .slick-next { display: none !important; }
+}
+
+@media (max-width: 480px) {
+  .slide_products { padding: 36px 0 60px; }
+  .top_slide h2 { font-size: 1.65rem; }
+  .top_slide p { font-size: 0.88rem; }
+  .slide_products .product-img-wrap { height: 180px; }
+  .slide_products .product-info { padding: 18px 16px 16px; }
+}
+
+/* ----------------------------------------
+   17. Reduced Motion
+   ---------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .slick-slide > div,
+  .top_slide > * { opacity: 1; }
+}
+
+/* ----------------------------------------
+   18. Print Styles
+   ---------------------------------------- */
+@media print {
+  .slide_products {
+    background: white;
+    padding: 20px;
+  }
+  
+  .slide_products::before,
+  .slide_products::after,
+  .slick-prev,
+  .slick-next,
+  .slick-dots,
+  .quick_add,
+  .wish_btn {
+    display: none !important;
+  }
+  
+  .product-card {
+    border: 1px solid #000;
+    page-break-inside: avoid;
+  }
+  
+  .product-title {
+    color: black !important;
+    -webkit-text-fill-color: black !important;
+  }
+  
+  .product-price {
+    color: black !important;
+    -webkit-text-fill-color: black !important;
+  }
+}

@@ -1,36 +1,35 @@
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import Logo from "../../image/online-shopping.png";
-import { FaSearch, FaRegHeart } from "react-icons/fa";
+import { FaRegHeart } from "react-icons/fa";
 import { TiShoppingCart } from "react-icons/ti";
-import './header.css';
+import "./header.css";
+import { CartContext } from "../Context/CartContext";
+
 function TopHeader() {
+  const { cartItems, favorites } = useContext(CartContext);
+
   return (
     <div className="top_header">
       <div className="container">
-        <Link to="/" className="logo">
-          <img src={Logo} alt="logo" />
+        {/* اللوجو */}
+        <Link className="logo" to="/">
+           <span className="logo-text">Store<span className="logo-accent">Hub</span></span> 
         </Link>
 
-        <form className="search_box">
-          <input
-            type="text"
-            name="search"
-            placeholder="Search for Product"
-          />
-          <button type="submit">
-            <FaSearch />
-          </button>
-        </form>
-
+        {/* أيقونات الهيدر */}
         <div className="header_icons">
           <div className="icon">
-            <FaRegHeart />
-            <span className="count">0</span>
+            <Link to="/favorites">
+              <FaRegHeart />
+              <span className="count">{favorites.length}</span>
+            </Link>
           </div>
 
           <div className="icon">
-            <TiShoppingCart />
-            <span className="count">0</span>
+            <Link to="/cart">
+              <TiShoppingCart />
+              <span className="count">{cartItems.length}</span>
+            </Link>
           </div>
         </div>
       </div>
