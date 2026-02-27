@@ -9,6 +9,7 @@ import { TiShoppingCart } from "react-icons/ti";
 import { CartContext } from "../../components/Context/CartContext";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import Footer from "../../components/Footer/Footer";
 
 function ProductInfo({ product }) {
 
@@ -57,6 +58,7 @@ function ProductInfo({ product }) {
 
 
   return (
+    <>
     <div className="details_item">
       <h1 className="name">{product.title}</h1>
       <div className="stars">
@@ -93,6 +95,9 @@ function ProductInfo({ product }) {
         </span>
       </div>
     </div>
+   
+    </>
+    
   );
 }
 

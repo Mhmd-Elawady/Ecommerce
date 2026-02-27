@@ -5,7 +5,7 @@ import "./home.css";
 import SlideProduct from "../../components/slideProducts/SlideProduct";
 import SlideProductLoading from "../../components/slideproducts/SlideProductLoading";
 import PageTransition from "../../components/PageTransition";
-import Navbar from "../Navbar/Navbar";
+import Footer from "../../components/Footer/Footer";
 const categories = [
   "smartphones",
   "mobile-accessories",
@@ -16,6 +16,7 @@ const categories = [
 ];
 
 function Home() {
+  
   const [products, setProducts] = useState({});
 
   const [loading, setLoading] = useState(true);
@@ -59,9 +60,9 @@ function Home() {
                 title={category.replace("-", " ")}
               />
             ))}
-             <Navbar />
+            
       </div>
-      
+      <Footer />
     </PageTransition>
    
   );

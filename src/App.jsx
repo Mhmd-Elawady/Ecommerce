@@ -11,13 +11,13 @@ import CategoryPage from "./page/CategoryPage/CategoryPage";
 import SearchResults from "./page/SearchResults";
 import Favorites from "./page/favorites/Favorites"
 import AboutUs from "./page/About/AboutUs";
+import Navbar from "./components/Navbar/Navbar";
 
 function App() {
   return (
     <>
       <header>
-        <TopHeader />
-        <BottomHeader />
+        <Navbar />
       </header>
 
       <Toaster

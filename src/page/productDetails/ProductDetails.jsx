@@ -8,6 +8,7 @@ import ProductImages from "./ProductImages";
 import ProductInfo from "./ProductInfo";
 import PageTransition from "../../components/PageTransition";
 
+import Footer from "../../components/Footer/Footer";
 function ProductDetails() {
   const { id } = useParams();
 
@@ -70,7 +71,7 @@ function ProductDetails() {
         />
       )}
     </div>
-
+    <Footer />
     </PageTransition>
   );
 }

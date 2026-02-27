@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FaBars, FaTimes, FaSearch, FaUser, FaRegHeart, FaShoppingCart } from "react-icons/fa";
-import { CartContext } from "../../components/Context/CartContext";
+import { CartContext } from "../Context/CartContext";
 import "./navbar.css";
 
 function Navbar() {

@@ -3,7 +3,7 @@ import { CartContext } from '../../components/Context/CartContext';
 import { FaTrashAlt } from "react-icons/fa";
 import './cart.css'
 import PageTransition from '../../components/PageTransition';
-import Navbar from '../Navbar/Navbar';
+import Footer from '../../components/Footer/Footer';
 function Cart() {
 
     const {cartItems , increaseQuantity , decreaseQuantity , removeFromCart} = useContext(CartContext)
@@ -60,7 +60,7 @@ function Cart() {
             </div>
         </div>
     </div>
-    <Navbar />
+    <Footer />
     </PageTransition>
   )
 }

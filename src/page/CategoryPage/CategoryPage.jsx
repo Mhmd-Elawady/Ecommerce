@@ -4,7 +4,8 @@ import Product from "../../components/slideProducts/Product";
 import "./categorypage.css";
 import SlideProductLoading from "../../components/slideproducts/SlideProductLoading";
 import PageTransition from "../../components/PageTransition";
-import Navbar from "../Navbar/Navbar";
+
+import Footer from "../../components/Footer/Footer";
 
 function CategoryPage() {
   const { category } = useParams();
@@ -47,7 +48,7 @@ function CategoryPage() {
         </div>
       )}
     </div>
-    <Navbar />
+    <Footer />
     </PageTransition>
   );
 }

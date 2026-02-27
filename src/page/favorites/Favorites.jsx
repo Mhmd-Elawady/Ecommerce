@@ -5,7 +5,8 @@ import Product from '../../components/slideProducts/Product'
 
 
 import "./favorites.css"
-import Navbar from '../Navbar/Navbar';
+
+import Footer from '../../components/Footer/Footer';
 
 function Favorites() {
     const {favorites} = useContext(CartContext)
@@ -29,7 +30,7 @@ function Favorites() {
                 )}
             </div>
         </div>
-        <Navbar />
+        <Footer />
     </PageTransition>
   )
 }
