@@ -12,7 +12,7 @@ import SearchResults from "./page/SearchResults";
 import Favorites from "./page/favorites/Favorites"
 import AboutUs from "./page/About/AboutUs";
 import Navbar from "./components/Navbar/Navbar";
-
+import Contact from "./page/Contact Us/ContactUs";
 function App() {
   return (
     <>
@@ -37,7 +37,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<AboutUs />} />
-          
+          <Route path="/contact" element={<Contact />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/favorites" element={<Favorites />} />
