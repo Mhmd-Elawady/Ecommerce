@@ -11,12 +11,12 @@ function TopHeader() {
   return (
     <div className="top_header">
       <div className="container">
-        {/* اللوجو */}
+    
         <Link className="logo" to="/">
            <span className="logo-text">Store<span className="logo-accent">Hub</span></span> 
         </Link>
 
-        {/* أيقونات الهيدر */}
+     
         <div className="header_icons">
           <div className="icon">
             <Link to="/favorites">

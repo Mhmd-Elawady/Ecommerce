@@ -1,6 +1,7 @@
 import React, { useState, useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
+
 import { FaBars, FaTimes, FaSearch, FaUser, FaRegHeart, FaShoppingCart } from "react-icons/fa";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { CartContext } from "../Context/CartContext";
 import "./navbar.css";
 
@@ -19,14 +20,17 @@ function Navbar() {
     setIsSearchOpen(!isSearchOpen);
   };
 
-  const handleSearch = (e) => {
+
+const navigate = useNavigate();
+
+const handleSearch = (e) => {
     e.preventDefault();
-
-    console.log("Searching for:", searchQuery);
-    setIsSearchOpen(false);
-  };
-
-
+    if (searchQuery.trim()) {
+        navigate(`/search?query=${encodeURIComponent(searchQuery.trim())}`); 
+        setIsSearchOpen(false);
+        setSearchQuery(""); 
+    }
+};
   const navLinks = [
     { path: "/", label: "Home" },
     { path: "/shop", label: "Shop" },
