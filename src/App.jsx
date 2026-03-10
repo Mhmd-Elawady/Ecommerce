@@ -1,4 +1,5 @@
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import BottomHeader from "./components/header/BottomHeader";
 import TopHeader from "./components/header/TopHeader";
 import Home from "./page/home/Home";
@@ -15,7 +16,25 @@ import Navbar from "./components/Navbar/Navbar";
 import Contact from "./page/Contact Us/ContactUs";
 import Shop from "./page/Shop/Shop"; 
 import FAQ from "./page/FAQ/Faq";
+import Login from "./page/Login/Login";
+import Register from "./page/Register/Register";
+
 function App() {
+  const [isFirstVisit, setIsFirstVisit] = useState(true);
+
+  useEffect(() => {
+  
+    const hasVisited = localStorage.getItem("hasVisited");
+    
+    if (hasVisited) {
+      setIsFirstVisit(false);
+    } else {
+    
+      localStorage.setItem("hasVisited", "true");
+      setIsFirstVisit(true);
+    }
+  }, []);
+
   return (
     <>
       <header>
@@ -37,7 +56,10 @@ function App() {
 
       <AnimatePresence mode="wait">
         <Routes>
-          <Route path="/" element={<Home />} />
+       
+          <Route path="/" element={isFirstVisit ? <Navigate to="/register" /> : <Home />} />
+          
+         
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/shop" element={<Shop />} />
@@ -47,6 +69,8 @@ function App() {
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/products/:id" element={<ProductDetails />} />
           <Route path="/category/:category" element={<CategoryPage />} /> 
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />  
         </Routes>
       </AnimatePresence>
     </>
