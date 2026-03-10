@@ -1,0 +1,358 @@
+/* ========================================
+   SHOP PAGE — Dark Cinematic Design
+   Built from your existing components
+   ======================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+/* ----------------------------------------
+   1. CSS Variables
+   ---------------------------------------- */
+:root {
+  --primary:           #dc2626;
+  --primary-light:     #ec4899;
+  --primary-dark:      #b91c1c;
+  --primary-rgb:       220, 38, 38;
+
+  --accent:            #ec4899;
+  --accent-rgb:        236, 72, 153;
+
+  --p_color:           #d1d5db;
+  --bg_color:          #0a0a0a;
+  --surface:           #1a1a1a;
+  --surface_alt:       #2d2d2d;
+  --color_heading:     #ffffff;
+  --border_color:      rgba(255, 255, 255, 0.1);
+  --border_color-strong: rgba(255, 255, 255, 0.15);
+
+  --shadow_sm:         0 2px 8px rgba(0,0,0,0.3);
+  --shadow_md:         0 8px 24px rgba(0,0,0,0.4);
+  --shadow_lg:         0 20px 50px rgba(0,0,0,0.5);
+  --shadow_primary:    0 10px 30px rgba(var(--primary-rgb), 0.2);
+
+  --spacing-xs:        4px;
+  --spacing-sm:        8px;
+  --spacing-md:        16px;
+  --spacing-lg:        24px;
+  --spacing-xl:        32px;
+  --spacing-xxl:       48px;
+  --spacing-xxxl:      64px;
+
+  --font-primary:      "Inter", sans-serif;
+  --font-secondary:    "DM Sans", sans-serif;
+
+  --font-size-xs:      12px;
+  --font-size-sm:      14px;
+  --font-size-md:      16px;
+  --font-size-lg:      18px;
+  --font-size-xl:      22px;
+  --font-size-xxl:     28px;
+  --font-size-hero:    36px;
+
+  --transition-fast:   0.25s cubic-bezier(0.4,0,0.2,1);
+  --transition-normal: 0.4s cubic-bezier(0.4,0,0.2,1);
+  --transition-slow:   0.6s cubic-bezier(0.4,0,0.2,1);
+
+  --radius-sm:         4px;
+  --radius-md:         8px;
+  --radius-lg:         12px;
+  --radius-xl:         16px;
+  --radius-xxl:        24px;
+  --radius-full:       9999px;
+}
+
+/* ----------------------------------------
+   2. Shop Page Container
+   ---------------------------------------- */
+.shop_page {
+  background: linear-gradient(135deg, var(--bg_color) 0%, #111111 100%);
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  padding: var(--spacing-xxxl) 0 0;
+}
+
+.shop_page::before {
+  content: '';
+  position: absolute;
+  top: -200px;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  border-radius: var(--radius-full);
+  background: radial-gradient(
+    circle at center,
+    rgba(var(--primary-rgb), 0.05) 0%,
+    rgba(var(--primary-rgb), 0.02) 30%,
+    transparent 70%
+  );
+  filter: blur(80px);
+  pointer-events: none;
+  animation: floatGradient 30s ease-in-out infinite;
+}
+
+.shop_page::after {
+  content: '';
+  position: absolute;
+  bottom: -200px;
+  left: -200px;
+  width: 500px;
+  height: 500px;
+  border-radius: var(--radius-full);
+  background: radial-gradient(
+    circle at center,
+    rgba(var(--accent-rgb), 0.04) 0%,
+    rgba(var(--accent-rgb), 0.01) 30%,
+    transparent 70%
+  );
+  filter: blur(80px);
+  pointer-events: none;
+  animation: floatGradient 35s ease-in-out infinite reverse;
+}
+
+@keyframes floatGradient {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(20px, 20px); }
+}
+
+.shop_page .container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-xl);
+  position: relative;
+  z-index: 2;
+}
+
+/* ----------------------------------------
+   3. Shop Header
+   ---------------------------------------- */
+.shop_page .shop_header {
+  text-align: center;
+  margin-bottom: var(--spacing-xxl);
+  position: relative;
+}
+
+.shop_page .shop_header h1 {
+  font-family: var(--font-secondary);
+  font-size: clamp(2.5rem, 5vw, var(--font-size-hero));
+  font-weight: 700;
+  color: var(--color_heading);
+  letter-spacing: -0.02em;
+  margin-bottom: var(--spacing-md);
+  position: relative;
+  display: inline-block;
+  padding-bottom: var(--spacing-md);
+  text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.shop_page .shop_header h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), transparent);
+  border-radius: var(--radius-full);
+  transition: var(--transition-normal);
+}
+
+.shop_page .shop_header:hover h1::after {
+  width: 120px;
+}
+
+.shop_page .shop_header p {
+  font-size: clamp(1rem, 2vw, var(--font-size-lg));
+  color: var(--p_color);
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.8;
+  font-weight: 300;
+  opacity: 0.8;
+}
+
+/* ----------------------------------------
+   4. Filters
+   ---------------------------------------- */
+.shop_page .shop_filters {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xxl);
+  flex-wrap: wrap;
+  gap: var(--spacing-lg);
+}
+
+.shop_page .filter_group {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.shop_page .filter_select {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: var(--surface);
+  border: 1px solid var(--border_color);
+  border-radius: var(--radius-full);
+  color: var(--color_heading);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: var(--transition-fast);
+  min-width: 200px;
+  font-family: var(--font-primary);
+}
+
+.shop_page .filter_select:hover,
+.shop_page .filter_select:focus {
+  border-color: var(--primary);
+  background: var(--surface_alt);
+}
+
+.shop_page .filter_select option {
+  background: var(--surface);
+  color: var(--color_heading);
+}
+
+.shop_page .results_count {
+  color: var(--p_color);
+  font-size: var(--font-size-sm);
+  opacity: 0.8;
+}
+
+/* ----------------------------------------
+   5. Products Grid
+   ---------------------------------------- */
+.shop_page .products_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-xl);
+  margin-bottom: var(--spacing-xxxl);
+}
+
+.shop_page .loading_grid {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+/* No Products */
+.shop_page .no_products {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: var(--spacing-xxl);
+  background: linear-gradient(145deg, var(--surface) 0%, var(--surface_alt) 100%);
+  border: 1px solid var(--border_color);
+  border-radius: var(--radius-xxl);
+  color: var(--p_color);
+  font-size: var(--font-size-lg);
+}
+
+/* ----------------------------------------
+   6. Pagination
+   ---------------------------------------- */
+.shop_page .pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin: var(--spacing-xxl) 0 var(--spacing-xxxl);
+}
+
+.shop_page .page_btn {
+  min-width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid var(--border_color);
+  border-radius: var(--radius-md);
+  color: var(--p_color);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.shop_page .page_btn:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--color_heading);
+  background: rgba(var(--primary-rgb), 0.1);
+}
+
+.shop_page .page_btn.active {
+  border-color: var(--primary);
+  color: var(--color_heading);
+  background: rgba(var(--primary-rgb), 0.1);
+}
+
+.shop_page .page_btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.shop_page .page_btn.prev,
+.shop_page .page_btn.next {
+  font-size: var(--font-size-lg);
+}
+
+.shop_page .page_dots {
+  color: var(--p_color);
+  opacity: 0.5;
+}
+
+/* ----------------------------------------
+   7. Responsive Design
+   ---------------------------------------- */
+@media (max-width: 992px) {
+  :root {
+    --spacing-xxxl: 48px;
+  }
+}
+
+@media (max-width: 768px) {
+  :root {
+    --font-size-hero: 32px;
+    --spacing-xxl: 32px;
+  }
+
+  .shop_page .shop_filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .shop_page .filter_group {
+    flex-direction: column;
+  }
+
+  .shop_page .filter_select {
+    width: 100%;
+  }
+
+  .shop_page .results_count {
+    text-align: center;
+  }
+
+  .shop_page .products_grid {
+    gap: var(--spacing-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --font-size-hero: 28px;
+    --spacing-xl: 24px;
+  }
+
+  .shop_page .container {
+    padding: 0 var(--spacing-lg);
+  }
+
+  .shop_page .products_grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shop_page .pagination {
+    flex-wrap: wrap;
+  }
+}

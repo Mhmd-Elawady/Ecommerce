@@ -30,8 +30,8 @@ function Navbar() {
   const navLinks = [
     { path: "/", label: "Home" },
     { path: "/shop", label: "Shop" },
-    { path: "/products", label: "Products" },
     { path: "/about", label: "About Us" },
+     { path: "/faq", label: "FAQ" },
     { path: "/contact", label: "Contact Us" },
   ];
 

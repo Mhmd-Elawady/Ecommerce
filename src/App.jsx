@@ -13,6 +13,8 @@ import Favorites from "./page/favorites/Favorites"
 import AboutUs from "./page/About/AboutUs";
 import Navbar from "./components/Navbar/Navbar";
 import Contact from "./page/Contact Us/ContactUs";
+import Shop from "./page/Shop/Shop"; 
+import FAQ from "./page/FAQ/Faq";
 function App() {
   return (
     <>
@@ -38,6 +40,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/about" element={<AboutUs />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/shop" element={<Shop />} />
+          <Route path="/faq" element={<FAQ />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/favorites" element={<Favorites />} />
