@@ -31,7 +31,6 @@ function Product({item}) {
       </div>
       ,{duration : 3500}
     )
-
   }
 
   // favorites
@@ -42,13 +41,31 @@ function Product({item}) {
       removeFromFavorites(item.id)
       toast.error(`${item.title} Removed from favorites`)
     }else{
-    addToFavorites(item)
-    toast.success(`${item.title} added To favorites`)
+      addToFavorites(item)
+      toast.success(`${item.title} added To favorites`)
     }
-   
-   }
-  
-  
+  }
+
+  // share
+  const handleShare = async () => {
+    const shareData = {
+      title: item.title,
+      text: `Check out this product: ${item.title}`,
+      url: window.location.origin + `/products/${item.id}`
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareData.url);
+        toast.success("Product link copied to clipboard");
+      }
+    } catch (error) {
+      console.log("Share failed:", error);
+    }
+  }
+
   return (
     <div className={`product ${isInCart ? 'in-cart' : ''}`}>
         <Link to={`/products/${item.id}`}>
@@ -62,11 +79,11 @@ function Product({item}) {
         <p className="name_product">{item.title}</p>
 
         <div className="stars">
-        <FaStar />
-        <FaStar />
-        <FaStar />
-        <FaStar />
-        <FaRegStarHalfStroke />
+          <FaStar />
+          <FaStar />
+          <FaStar />
+          <FaStar />
+          <FaRegStarHalfStroke />
         </div>
 
         <p className='price'><span>$ {item.price}</span></p>
@@ -75,7 +92,7 @@ function Product({item}) {
         <div className="icons">
             <span className='btn_addtocart' onClick={handleAddToCart}><FaCartArrowDown /></span>
             <span className={`${isInFav ? "in-fav" : ""}`} onClick={handleAddToFav}><FaRegHeart /></span>
-            <span><FaShare /></span>
+            <span onClick={handleShare}><FaShare /></span>
         </div>
     </div>
   )
