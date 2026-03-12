@@ -1,54 +1,70 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Product from "../../components/slideProducts/Product";
-import "./categorypage.css";
 import SlideProductLoading from "../../components/slideproducts/SlideProductLoading";
 import PageTransition from "../../components/PageTransition";
-
 import Footer from "../../components/Footer/Footer";
+import "./categorypage.css";
 
 function CategoryPage() {
   const { category } = useParams();
-
   const [categoryProducts, setCategoryProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
+    setLoading(true);
+    setError(false);
+
     fetch(`https://dummyjson.com/products/category/${category}`)
       .then((res) => res.json())
       .then((data) => {
-        setCategoryProducts(data);
+        setCategoryProducts(data.products || []);
       })
-      .catch((error) => console.error(error))
+      .catch((err) => {
+        console.error("Category fetch error:", err);
+        setError(true);
+      })
       .finally(() => setLoading(false));
   }, [category]);
 
-  console.log(categoryProducts);
+  // Format category name: "mens-shirts" → "Mens Shirts"
+  const formattedCategory = category
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 
   return (
     <PageTransition key={category}>
-        <div className="category_products">
-      {loading ? (
-        <SlideProductLoading key={category} />
-      ) : (
+      <div className="category_products">
         <div className="container">
-          <div className="top_slide">
-            <h2>{category} : {categoryProducts.limit}</h2>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Molestias, voluptates?
-            </p>
-          </div>
 
-          <div className="products">
-            {categoryProducts.products.map((item, index) => (
-              <Product item={item} key={index} />
-            ))}
-          </div>
+          {loading ? (
+            <SlideProductLoading />
+          ) : error ? (
+            <p className="error-message">
+              Something went wrong. Please try again later.
+            </p>
+          ) : (
+            <>
+              <div className="top_slide">
+                <h2>
+                  {formattedCategory}
+                  <span> ({categoryProducts.length} Products)</span>
+                </h2>
+              </div>
+
+              <div className="products">
+                {categoryProducts.map((item) => (
+                  <Product item={item} key={item.id} />
+                ))}
+              </div>
+            </>
+          )}
+
         </div>
-      )}
-    </div>
-    <Footer />
+      </div>
+      <Footer />
     </PageTransition>
   );
 }

@@ -1,13 +1,13 @@
-import React from 'react';
-import './aboutus.css';
-import Navbar from '../../components/Navbar/Navbar';
-import Footer from '../../components/Footer/Footer';
+import React from "react";
+import Footer from "../../components/Footer/Footer";
+import PageTransition from "../../components/PageTransition";
+import "./aboutus.css";
+
 const AboutUs = () => {
   return (
-    <>
-      
-
+    <PageTransition>
       <div className="about-container">
+
         <section className="about-hero">
           <h1>About Our Company</h1>
           <p>
@@ -19,7 +19,7 @@ const AboutUs = () => {
         <section className="about-mission">
           <h2>Our Mission & Vision</h2>
           <p>
-            <strong>Mission:</strong> To make shopping simple, affordable and
+            <strong>Mission:</strong> To make shopping simple, affordable, and
             enjoyable for everyone.
           </p>
           <p>
@@ -47,9 +47,10 @@ const AboutUs = () => {
             convenience.
           </p>
         </section>
+
       </div>
       <Footer />
-    </>
+    </PageTransition>
   );
 };
 

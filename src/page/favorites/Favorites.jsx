@@ -1,38 +1,37 @@
-import React, { useContext } from 'react'
-import { CartContext } from '../../components/Context/CartContext';
-import PageTransition from '../../components/PageTransition'
-import Product from '../../components/slideProducts/Product'
-
-
-import "./favorites.css"
-
-import Footer from '../../components/Footer/Footer';
+import React, { useContext } from "react";
+import { CartContext } from "../../components/Context/CartContext";
+import PageTransition from "../../components/PageTransition";
+import Product from "../../components/slideProducts/Product";
+import Footer from "../../components/Footer/Footer";
+import "./favorites.css";
 
 function Favorites() {
-    const {favorites} = useContext(CartContext)
+  const { favorites } = useContext(CartContext);
 
   return (
-    <PageTransition >
-        <div className="category_products FavoritesPage">
-            <div className="container">
-                <div className="top_slide">
-                    <h2>Your Favorites</h2>
-                </div>
+    <PageTransition>
+      <div className="category_products FavoritesPage">
+        <div className="container">
 
-                {favorites.length === 0 ? (
-                    <p>No Favorites Products yet.</p>
-                ) : (
-                    <div className="products">
-                        {favorites.map(item => (
-                            <Product item={item} key={item.id} />
-                        ))}
-                    </div>
-                )}
+          <div className="top_slide">
+            <h2>Your Favorites</h2>
+          </div>
+
+          {favorites.length === 0 ? (
+            <p className="empty-message">No favorite products yet.</p>
+          ) : (
+            <div className="products">
+              {favorites.map((item) => (
+                <Product item={item} key={item.id} />
+              ))}
             </div>
+          )}
+
         </div>
-        <Footer />
+      </div>
+      <Footer />
     </PageTransition>
-  )
+  );
 }
 
-export default Favorites
+export default Favorites;

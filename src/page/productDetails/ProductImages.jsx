@@ -1,25 +1,31 @@
-import React from 'react'
+import React, { useState } from "react";
 
-function ProductImages({product}) {
+function ProductImages({ product }) {
+  const [activeImg, setActiveImg] = useState(product.images[0]);
+
   return (
-       <div className="imgs_item">
-                <div className="big_img">
-                  <img id="big_img" src={product.images[0]} alt={product.title} />
-                </div>
-    
-                <div className="sm_img">
-                  {product.images.map((img, index) => (
-                    <div className="img_div_sm"  key={index}>
-                      <img
-                      src={img}
-                      alt={product.title}
-                      onClick={() => (document.getElementById("big_img").src = img)}
-                    />
-                    </div>
-                  ))}
-                </div>
-              </div>
-  )
+    <div className="imgs_item">
+
+      {/* Main large image */}
+      <div className="big_img">
+        <img src={activeImg} alt={product.title} />
+      </div>
+
+      {/* Thumbnail images */}
+      <div className="sm_img">
+        {product.images.map((img, index) => (
+          <div
+            key={index}
+            className={`img_div_sm ${activeImg === img ? "active" : ""}`}
+            onClick={() => setActiveImg(img)}
+          >
+            <img src={img} alt={`${product.title} view ${index + 1}`} />
+          </div>
+        ))}
+      </div>
+
+    </div>
+  );
 }
 
-export default ProductImages
+export default ProductImages;

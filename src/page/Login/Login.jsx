@@ -1,8 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaEnvelope, FaLock, FaEye, FaEyeSlash, FaGoogle, FaFacebook, FaApple } from "react-icons/fa";
+import {
+  FaEnvelope,
+  FaLock,
+  FaEye,
+  FaEyeSlash,
+  FaGoogle,
+  FaFacebook,
+  FaApple,
+} from "react-icons/fa";
 import PageTransition from "../../components/PageTransition";
-import Footer from "../../components/Footer/Footer";
+import { supabase } from "../../supabaseClient";
+import { useAuth } from "../../hooks/useAuth";
 import "./Login.css";
 
 function Login() {
@@ -12,42 +21,76 @@ function Login() {
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
+
+  // Redirect to home if already logged in
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    
 
     if (!email || !password) {
-      setError("Please fill in all fields");
+      setError("Please fill in all fields.");
       return;
     }
 
     setLoading(true);
 
+    try {
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    setTimeout(() => {
+      if (authError) {
+        setError(authError.message);
+      } else {
+        navigate("/");
+      }
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+    } finally {
       setLoading(false);
-    
-      navigate("/");
-    }, 1500);
+    }
   };
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+  // Social login handlers
+  const handleSocialLogin = async (provider) => {
+    setLoading(true);
+    setError("");
+    try {
+      const { error: socialError } = await supabase.auth.signInWithOAuth({
+        provider: provider,
+        options: {
+          redirectTo: `${window.location.origin}/`,
+        },
+      });
+
+      if (socialError) {
+        setError(`${provider} login failed: ${socialError.message}`);
+      }
+    } catch (err) {
+      setError(`${provider} login error: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <PageTransition>
       <div className="login-page">
-        {/* Decorative gradients */}
         <div className="login-gradient login-gradient-1"></div>
         <div className="login-gradient login-gradient-2"></div>
-        
+
         <div className="login-container">
           <div className="login-card">
+
             {/* Header */}
             <div className="login-header">
               <h1>Welcome Back</h1>
@@ -63,6 +106,8 @@ function Login() {
 
             {/* Login Form */}
             <form onSubmit={handleSubmit} className="login-form">
+
+              {/* Email */}
               <div className="form-group">
                 <label htmlFor="email">
                   <FaEnvelope className="input-icon" />
@@ -78,6 +123,7 @@ function Login() {
                 />
               </div>
 
+              {/* Password */}
               <div className="form-group">
                 <label htmlFor="password">
                   <FaLock className="input-icon" />
@@ -95,13 +141,15 @@ function Login() {
                   <button
                     type="button"
                     className="password-toggle"
-                    onClick={togglePasswordVisibility}
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
               </div>
 
+              {/* Remember Me & Forgot Password */}
               <div className="form-options">
                 <label className="checkbox-label">
                   <input
@@ -116,17 +164,15 @@ function Login() {
                 </Link>
               </div>
 
-              <button 
-                type="submit" 
+              {/* Submit Button */}
+              <button
+                type="submit"
                 className="login-button"
                 disabled={loading}
               >
-                {loading ? (
-                  <span className="loading-spinner"></span>
-                ) : (
-                  "Sign In"
-                )}
+                {loading ? <span className="loading-spinner"></span> : "Sign In"}
               </button>
+
             </form>
 
             {/* Social Login */}
@@ -134,17 +180,31 @@ function Login() {
               <p className="divider">
                 <span>Or continue with</span>
               </p>
-              
               <div className="social-buttons">
-                <button className="social-btn google">
+                <button
+                  className="social-btn google"
+                  type="button"
+                  onClick={() => handleSocialLogin("google")}
+                  disabled={loading}
+                >
                   <FaGoogle />
                   <span>Google</span>
                 </button>
-                <button className="social-btn facebook">
+                <button
+                  className="social-btn facebook"
+                  type="button"
+                  onClick={() => handleSocialLogin("facebook")}
+                  disabled={loading}
+                >
                   <FaFacebook />
                   <span>Facebook</span>
                 </button>
-                <button className="social-btn apple">
+                <button
+                  className="social-btn apple"
+                  type="button"
+                  onClick={() => handleSocialLogin("apple")}
+                  disabled={loading}
+                >
                   <FaApple />
                   <span>Apple</span>
                 </button>
@@ -155,12 +215,13 @@ function Login() {
             <div className="signup-link">
               <p>
                 Don't have an account?{" "}
-                <Link to="/signup">Create Account</Link>
+                <Link to="/register">Create Account</Link>
               </p>
             </div>
+
           </div>
         </div>
-        <Footer />
+   
       </div>
     </PageTransition>
   );

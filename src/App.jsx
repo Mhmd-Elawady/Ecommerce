@@ -1,7 +1,6 @@
 import { Route, Routes, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import BottomHeader from "./components/header/BottomHeader";
-import TopHeader from "./components/header/TopHeader";
+
 import Home from "./page/home/Home";
 import ProductDetails from "./page/productDetails/ProductDetails";
 import Cart from "./page/cart/Cart";
@@ -18,6 +17,10 @@ import Shop from "./page/Shop/Shop";
 import FAQ from "./page/FAQ/Faq";
 import Login from "./page/Login/Login";
 import Register from "./page/Register/Register";
+import ForgotPassword from "./page/Login/ForgotPassword";
+import ResetPassword from "./page/Login/ResetPassword";
+import UserProfile from "./page/UserProfile/UserProfile";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   const [isFirstVisit, setIsFirstVisit] = useState(true);
@@ -64,13 +67,42 @@ function App() {
           <Route path="/contact" element={<Contact />} />
           <Route path="/shop" element={<Shop />} />
           <Route path="/faq" element={<FAQ />} />
-          <Route path="/cart" element={<Cart />} />
+          
+          {/* Protected Routes - Requires Authentication */}
+          <Route
+            path="/cart"
+            element={
+              <PrivateRoute>
+                <Cart />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/favorites"
+            element={
+              <PrivateRoute>
+                <Favorites />
+              </PrivateRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <PrivateRoute>
+                <UserProfile />
+              </PrivateRoute>
+            }
+          />
+          
           <Route path="/search" element={<SearchResults />} />
-          <Route path="/favorites" element={<Favorites />} />
           <Route path="/products/:id" element={<ProductDetails />} />
           <Route path="/category/:category" element={<CategoryPage />} /> 
+          
+          {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />  
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </AnimatePresence>
     </>

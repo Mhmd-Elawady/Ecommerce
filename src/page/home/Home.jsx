@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import HeroSlider from "../../components/HeroSlider";
-
-import "./home.css";
-import SlideProduct from "../../components/slideProducts/SlideProduct";
-import SlideProductLoading from "../../components/slideproducts/SlideProductLoading";
 import PageTransition from "../../components/PageTransition";
 import Footer from "../../components/Footer/Footer";
-const categories = [
+import HeroSlider from "../../components/HeroSlider";
+import SlideProduct from "../../components/slideProducts/SlideProduct";
+import SlideProductLoading from "../../components/slideproducts/SlideProductLoading";
+import "./home.css";
+
+const CATEGORIES = [
   "smartphones",
   "mobile-accessories",
   "laptops",
@@ -15,17 +15,19 @@ const categories = [
   "sports-accessories",
 ];
 
-function Home() {
-  
-  const [products, setProducts] = useState({});
+// Converts "mobile-accessories" → "mobile accessories"
+const formatTitle = (category) => category.replace(/-/g, " ");
 
+function Home() {
+  const [products, setProducts] = useState({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const results = await Promise.all(
-          categories.map(async (category) => {
+          CATEGORIES.map(async (category) => {
             const res = await fetch(
               `https://dummyjson.com/products/category/${category}`
             );
@@ -36,8 +38,9 @@ function Home() {
 
         const productsData = Object.assign({}, ...results);
         setProducts(productsData);
-      } catch (error) {
-        console.error("Erorr Fetching", error);
+      } catch (err) {
+        console.error("Error fetching products:", err);
+        setError("Failed to load products. Please try again later.");
       } finally {
         setLoading(false);
       }
@@ -50,21 +53,25 @@ function Home() {
     <PageTransition>
       <div>
         <HeroSlider />
-        
-        {loading
-          ? categories.map((category) => <SlideProductLoading key={category} />)
-          : categories.map((category) => (
-              <SlideProduct
-                key={category}
-                data={products[category]}
-                title={category.replace("-", " ")}
-              />
-            ))}
-            
+
+        {error ? (
+          <p className="error-message">{error}</p>
+        ) : loading ? (
+          CATEGORIES.map((category) => (
+            <SlideProductLoading key={category} />
+          ))
+        ) : (
+          CATEGORIES.map((category) => (
+            <SlideProduct
+              key={category}
+              data={products[category]}
+              title={formatTitle(category)}
+            />
+          ))
+        )}
       </div>
       <Footer />
     </PageTransition>
-   
   );
 }
 
