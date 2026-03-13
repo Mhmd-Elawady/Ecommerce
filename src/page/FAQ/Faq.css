@@ -150,13 +150,13 @@
   transform: translateX(-50%);
   width: 80px;
   height: 2px;
-  background: linear-gradient(90deg, var(--primary), transparent);
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
   border-radius: var(--radius-full);
   transition: var(--transition-normal);
 }
 
 .faq_header:hover h1::after {
-  width: 120px;
+  width: 520px;
 }
 
 .faq_header p {
