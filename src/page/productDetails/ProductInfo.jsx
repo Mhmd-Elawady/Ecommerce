@@ -97,4 +97,4 @@ function ProductInfo({ product }) {
   );
 }
 
-export default ProductInfo;Fix some issues in the project
+export default ProductInfo;
