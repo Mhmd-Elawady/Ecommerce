@@ -8,18 +8,18 @@ import { CartContext } from "../../components/Context/CartContext";
 function ProductInfo({ product }) {
   const { cartItems, addToCart, addToFavorites, favorites, removeFromFavorites } =
     useContext(CartContext);
-
   const navigate = useNavigate();
+
+  const productImage = Array.isArray(product.images) ? product.images[0] : product.image;
 
   const isInCart = cartItems.some((i) => i.id === product.id);
   const isInFav = favorites.some((i) => i.id === product.id);
 
   const handleAddToCart = () => {
     addToCart(product);
-
     toast.success(
       <div className="toast-wrapper">
-        <img src={product.images[0]} alt={product.title} className="toast-img" />
+        <img src={productImage} alt={product.title} className="toast-img" />
         <div className="toast-content">
           <strong>{product.title}</strong> added to Cart
           <div>
@@ -43,35 +43,37 @@ function ProductInfo({ product }) {
     }
   };
 
+  const handleShare = async () => {
+    const shareData = {
+      title: product.title,
+      text: `Check out this product: ${product.title}`,
+      url: window.location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareData.url);
+        toast.success("Product link copied to clipboard");
+      }
+    } catch (error) {
+      console.log("Share failed:", error);
+    }
+  };
+
   return (
     <div className="details_item">
-
       <h1 className="name">{product.title}</h1>
-
-      {/* Static star rating — replace with dynamic later if needed */}
       <div className="stars">
-        <FaStar />
-        <FaStar />
-        <FaStar />
-        <FaStar />
-        <FaRegStarHalfStroke />
+        <FaStar /><FaStar /><FaStar /><FaStar /><FaRegStarHalfStroke />
       </div>
-
       <p className="price">${product.price}</p>
-
-      <h5>
-        Availability: <span>{product.availabilityStatus}</span>
-      </h5>
-      <h5>
-        Brand: <span>{product.brand}</span>
-      </h5>
-
+      <h5>Availability: <span>{product.availabilityStatus}</span></h5>
+      <h5>Brand: <span>{product.brand}</span></h5>
       <p className="desc">{product.description}</p>
-
       <h5 className="stock">
         <span>Hurry Up! Only {product.stock} products left in stock.</span>
       </h5>
-
       <button
         onClick={handleAddToCart}
         className={`btn ${isInCart ? "in-cart" : ""}`}
@@ -79,7 +81,6 @@ function ProductInfo({ product }) {
         {isInCart ? "Item in Cart" : "Add to Cart"}
         <TiShoppingCart />
       </button>
-
       <div className="icons">
         <span
           className={isInFav ? "in-fav" : ""}
@@ -88,13 +89,12 @@ function ProductInfo({ product }) {
         >
           <FaRegHeart />
         </span>
-        <span title="Share">
+        <span onClick={handleShare} title="Share">
           <FaShare />
         </span>
       </div>
-
     </div>
   );
 }
 
-export default ProductInfo;
+export default ProductInfo;Fix some issues in the project

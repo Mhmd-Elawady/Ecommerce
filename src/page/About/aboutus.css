@@ -20,21 +20,6 @@
   overflow: hidden;
 }
 
-.about-hero::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(241, 241, 241, 0.6),
-    transparent
-  );
-  border-radius: 20px 20px 0 0;
-}
 
 .about-hero h1 {
   font-size: 3.5rem;

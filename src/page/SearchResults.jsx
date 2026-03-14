@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import PageTransition from "../components/PageTransition";
 import SlideProductLoading from "../components/slideproducts/SlideProductLoading";
-import Product from "../components/slideProducts/Product";
+import Product from "../components/slideproducts/Product";
 
 function SearchResults() {
   const [results, setResults] = useState([]);

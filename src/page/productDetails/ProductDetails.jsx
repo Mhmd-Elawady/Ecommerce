@@ -1,17 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import "./productdetails.css";
-
 import PageTransition from "../../components/PageTransition";
 import Footer from "../../components/Footer/Footer";
 import ProductImages from "./ProductImages";
 import ProductInfo from "./ProductInfo";
 import ProductDetailsLoading from "./ProductDetailsLoading";
-import SlideProduct from "../../components/slideProducts/SlideProduct";
+import SlideProduct from "../../components/slideproducts/SlideProduct";
 import SlideProductLoading from "../../components/slideproducts/SlideProductLoading";
+
+const normalizeProduct = (data) => ({
+  id: data.id,
+  title: data.title,
+  description: data.description,
+  price: data.price,
+  images: [data.image],
+  brand: data.category,
+  category: data.category,
+  stock: 10,
+  availabilityStatus: "In Stock",
+});
 
 function ProductDetails() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const source = searchParams.get("source");
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -19,20 +32,21 @@ function ProductDetails() {
   const [loadingRelated, setLoadingRelated] = useState(true);
   const [notFound, setNotFound] = useState(false);
 
-  // Fetch main product
   useEffect(() => {
     setLoading(true);
     setNotFound(false);
+    setProduct(null);
 
     const fetchProduct = async () => {
       try {
-        const res = await fetch(`https://dummyjson.com/products/${id}`);
-        const data = await res.json();
-
-        if (!data || data.message) {
-          setNotFound(true);
+        if (source === "fakestore") {
+          const res = await fetch(`https://fakestoreapi.com/products/${id}`);
+          const data = await res.json();
+          data?.id ? setProduct(normalizeProduct(data)) : setNotFound(true);
         } else {
-          setProduct(data);
+          const res = await fetch(`https://dummyjson.com/products/${id}`);
+          const data = await res.json();
+          data && !data.message ? setProduct(data) : setNotFound(true);
         }
       } catch (error) {
         console.error("Failed to fetch product:", error);
@@ -43,20 +57,27 @@ function ProductDetails() {
     };
 
     fetchProduct();
-  }, [id]);
+  }, [id, source]);
 
-  // Fetch related products once we know the category
   useEffect(() => {
     if (!product?.category) return;
-
     setLoadingRelated(true);
 
-    fetch(`https://dummyjson.com/products/category/${product.category}`)
+    const url = source === "fakestore"
+      ? `https://fakestoreapi.com/products/category/${product.category}`
+      : `https://dummyjson.com/products/category/${product.category}`;
+
+    fetch(url)
       .then((res) => res.json())
-      .then((data) => setRelatedProducts(data.products || []))
-      .catch((error) => console.error("Failed to fetch related products:", error))
+      .then((data) => {
+        const products = source === "fakestore"
+          ? data.map(normalizeProduct)
+          : data.products || [];
+        setRelatedProducts(products);
+      })
+      .catch((error) => console.error("Failed to fetch related:", error))
       .finally(() => setLoadingRelated(false));
-  }, [product?.category]);
+  }, [product?.category, source]);
 
   if (loading) {
     return (
@@ -86,7 +107,6 @@ function ProductDetails() {
           <ProductInfo product={product} />
         </div>
       </div>
-
       {loadingRelated ? (
         <SlideProductLoading />
       ) : (
@@ -96,7 +116,6 @@ function ProductDetails() {
           title={product.category.replace(/-/g, " ")}
         />
       )}
-
       <Footer />
     </PageTransition>
   );

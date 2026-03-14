@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import Product from "../../components/slideProducts/Product";
+import Product from "../../components/slideproducts/Product";
 import SlideProductLoading from "../../components/slideproducts/SlideProductLoading";
 import PageTransition from "../../components/PageTransition";
 import Footer from "../../components/Footer/Footer";

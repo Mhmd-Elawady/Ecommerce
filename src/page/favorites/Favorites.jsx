@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { CartContext } from "../../components/Context/CartContext";
 import PageTransition from "../../components/PageTransition";
-import Product from "../../components/slideProducts/Product";
+import Product from "../../components/slideproducts/Product";
 import Footer from "../../components/Footer/Footer";
 import "./favorites.css";
 

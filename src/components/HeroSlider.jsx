@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Pagination, Autoplay } from "swiper/modules";
 import { Link } from "react-router-dom";
-
 import "swiper/css";
 import "swiper/css/pagination";
 import '../page/home/home.css';
+
 function HeroSlider() {
   const [products, setProducts] = useState([]);
 
@@ -16,29 +16,24 @@ function HeroSlider() {
       .catch((err) => console.log(err));
   }, []);
 
-  const slides = products.length < 2 ? [...products, ...products] : products;
-
   return (
     <div className="hero">
       <div className="container">
         {products.length > 0 ? (
           <Swiper
-            loop={slides.length > 1}
-            autoplay={{
-              delay: 2000,
-              disableOnInteraction: false,
-            }}
+            loop={true}
+            autoplay={{ delay: 2000, disableOnInteraction: false }}
             pagination={{ clickable: true }}
             modules={[Pagination, Autoplay]}
             className="mySwiper"
           >
-            {slides.map((product, index) => (
-              <SwiperSlide key={index}>
+            {products.map((product) => (
+              <SwiperSlide key={product.id}>
                 <div className="content">
                   <h4>Introducing the new</h4>
                   <h3>{product.title}</h3>
                   <p>{product.description}</p>
-                  <Link to="/" className="btn">
+                  <Link to={`/products/${product.id}?source=fakestore`} className="btn">
                     Shop Now
                   </Link>
                 </div>

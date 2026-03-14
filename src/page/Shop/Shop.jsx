@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./shop.css";
 import PageTransition from "../../components/PageTransition";
 import Footer from "../../components/Footer/Footer";
-import Product from "../../components/slideProducts/Product";
+import Product from "../../components/slideproducts/Product";
 import SlideProductLoading from "../../components/slideproducts/SlideProductLoading";
 
 const categories = [

@@ -11,8 +11,8 @@ const CATEGORIES = [
   "mobile-accessories",
   "laptops",
   "tablets",
-  "sunglasses",
-  "sports-accessories",
+  "motorcycle",
+  "vehicle",
 ];
 
 // Converts "mobile-accessories" → "mobile accessories"
