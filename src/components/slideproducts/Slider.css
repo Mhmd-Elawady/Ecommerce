@@ -665,14 +665,12 @@ body {
   transition: all 0.3s var(--ease-spring) !important;
 }
 
-.slick-prev { left: -16px !important; }
-.slick-next { right: -16px !important; }
+
 
 .slick-prev:hover,
 .slick-next:hover {
   background: #dc2626 !important;
   border-color: #dc2626 !important;
-  transform: scale(1.1) !important;
   box-shadow: var(--shadow-red) !important;
 }
 
