@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import PageTransition from "../../components/PageTransition";
 import Footer from "../../components/Footer/Footer";
 import HeroSlider from "../../components/HeroSlider";
-import SlideProduct from "../../components/slideProducts/SlideProduct";
+import SlideProduct from "../../components/slideproducts/SlideProduct";
 import SlideProductLoading from "../../components/slideproducts/SlideProductLoading";
 import "./home.css";
 
