@@ -16,11 +16,12 @@ function SlideProduct({ data, title }) {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 2500,
-    responsive: [
-      { breakpoint: 1024, settings: { slidesToShow: 4 } },
-      { breakpoint: 768, settings: { slidesToShow: 2 } },
-      { breakpoint: 480, settings: { slidesToShow: 1 } },
-    ]
+  responsive: [
+  { breakpoint: 1200, settings: { slidesToShow: 4 } },
+  { breakpoint: 1024, settings: { slidesToShow: 3 } },
+  { breakpoint: 768,  settings: { slidesToShow: 2 } },
+  { breakpoint: 480,  settings: { slidesToShow: 1, arrows: false } },
+]
   };
 
   return (

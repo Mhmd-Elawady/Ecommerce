@@ -301,6 +301,7 @@ body {
   position: relative;
 }
 
+
 .slick-list {
   margin: 0 -12px;
   padding: 16px 0 48px;
@@ -310,7 +311,6 @@ body {
 .slick-slide {
   padding: 0 12px;
 }
-
 .slick-slide > div {
   animation: riseIn 0.7s var(--ease-spring) forwards;
   opacity: 0;
@@ -842,6 +842,17 @@ body {
 }
 
 @media (max-width: 768px) {
+   .slick-list {
+    margin: 0 -8px;
+  }
+
+  .slick-slide {
+    padding: 0 8px;
+  }
+
+  .slide_products .product-card {
+    width: 100% !important;
+  }
   .slide_products { padding: 48px 0 72px; }
 
   .container { padding: 0 20px; }
@@ -871,13 +882,30 @@ body {
   .slick-prev,
   .slick-next { display: none !important; }
 }
-
 @media (max-width: 480px) {
   .slide_products { padding: 36px 0 60px; }
   .top_slide h2 { font-size: 1.65rem; }
   .top_slide p { font-size: 0.88rem; }
   .slide_products .product-img-wrap { height: 180px; }
   .slide_products .product-info { padding: 18px 16px 16px; }
+
+  /* ← ضيف الكود ده */
+  .slick-list {
+    margin: 0 -6px;
+  }
+
+  .slick-slide {
+    padding: 0 6px;
+  }
+
+  .slick-slide > div {
+    padding: 0;
+  }
+
+  .slide_products .product-card {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
 }
 
 /* ----------------------------------------
