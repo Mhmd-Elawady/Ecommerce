@@ -538,86 +538,74 @@ body {
     font-size: 15px;
   }
 }
-@media (max-width: 768px) {
-  .slide_products {
-    padding: 40px 0;
+/* ========================================
+   SLIDER FIXES
+   ======================================== */
+
+/* Fix slick slide padding */
+.slick-slide > div {
+  padding: 0 8px;
+}
+
+.slick-list {
+  margin: 0 -8px;
+}
+
+/* Mobile: 1 card full width */
+@media (max-width: 480px) {
+  .slick-slide > div {
+    padding: 0 6px;
   }
 
-  .top_slide {
-    padding: 10px 0 15px;
+  .slick-list {
+    margin: 0 -6px;
   }
 
-  .top_slide h2 {
-    font-size: 24px;
-  }
-
-  .products_container {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .product {
-    padding: 16px 12px;
-    max-width: 340px;
-    margin: 0 auto;
-  }
-
-  .product .img_product {
-    height: 200px;
-    padding: 0 10px;
-    margin-bottom: 16px;
-  }
-
-  .product .img_product img {
-    height: 180px;
-  }
-
-  .product .name_product {
-    font-size: 15px;
-  }
-
-  .product .price {
-    font-size: 18px;
-  }
-
-  .product .icons {
-    position: static;
-    transform: none;
-    flex-direction: row;
-    justify-content: flex-start;
-    margin-top: 12px;
-    right: auto;
-  }
-
-  .product:hover .icons {
-    right: auto;
-  }
-
-  .product .icons span {
-    width: 34px;
-    height: 34px;
+  /* Card fills the slide */
+  .slick-slide .product {
+    max-width: 100%;
+    margin: 0;
+    width: 100%;
   }
 }
 
-@media (max-width: 480px) {
-  .products_container {
-    grid-template-columns: 1fr;
-    gap: 12px;
+/* Tablet: 2 cards */
+@media (max-width: 768px) {
+  .slick-slide > div {
+    padding: 0 8px;
   }
 
-  .product {
+  .slick-slide .product {
     max-width: 100%;
     margin: 0;
   }
+}
 
-  .top_slide h2 {
-    font-size: 20px;
-  }
+/* Dots styling */
+.slick-dots {
+  bottom: -30px;
+}
 
-  .top_slide p {
-    font-size: 13px;
-    max-width: 100%;
-  }
+.slick-dots li button:before {
+  color: var(--main_color);
+  opacity: 0.4;
+  font-size: 8px;
+}
+
+.slick-dots li.slick-active button:before {
+  color: var(--main_color);
+  opacity: 1;
+}
+
+/* Arrow buttons */
+.slick-prev,
+.slick-next {
+  z-index: 10;
+}
+
+.slick-prev:before,
+.slick-next:before {
+  color: var(--main_color);
 }
 /* ========================================
    REDUCED MOTION
