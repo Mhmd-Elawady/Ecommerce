@@ -282,15 +282,23 @@ body {
 
 .slick-slide {
   padding: 0 12px;
-  height: inherit !important;
+  height: auto !important;
+  display: flex !important;
+  flex: 0 0 auto !important; /* Prevents squishing on mobile */
 }
 
-/* ✅ الإصلاح الرئيسي — width: 100% هو المفتاح */
+
 .slick-slide > div {
   width: 100% !important;
-  height: 100% !important;
+  display: flex !important;
   opacity: 1 !important;
   animation: none !important;
+}
+
+.slide-item-wrapper {
+  width: 100% !important;
+  display: flex !important;
+  height: 100% !important;
 }
 
 /* ----------------------------------------

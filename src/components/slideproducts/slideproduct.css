@@ -144,7 +144,7 @@ body {
   overflow: hidden;
 }
 
-/* ✅ الإصلاح الرئيسي */
+
 .slick-track {
   display: flex !important;
   align-items: stretch !important;
@@ -152,14 +152,22 @@ body {
 
 .slick-slide {
   padding: 0 12px;
-  height: inherit !important;
+  height: auto !important;
+  display: flex !important;
+  flex: 0 0 auto !important; /* Prevents squishing on mobile */
 }
 
 .slick-slide > div {
   width: 100% !important;
-  height: 100% !important;
+  display: flex !important;
   opacity: 1 !important;
   animation: none !important;
+}
+
+.slide-item-wrapper {
+  width: 100% !important;
+  display: flex !important;
+  height: 100% !important;
 }
 
 /* ========================================
@@ -695,7 +703,6 @@ body {
     height: 14px;
   }
 
-  /* ✅ الأيقونات تظهر دائماً في الموبايل بدل hover */
   .product .icons {
     position: static;
     transform: none;

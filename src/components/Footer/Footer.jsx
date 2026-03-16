@@ -157,7 +157,7 @@ function Footer() {
               <ul className="contact-info">
                 <li>
                   <FaMapMarkerAlt className="contact-icon" />
-                  <span>123 Commerce Street, New York, NY 10001</span>
+                  <span>El Gomhoria Street Mansoura, Dakahlia, Egypt</span>
                 </li>
                 <li>
                   <FaPhoneAlt className="contact-icon" />

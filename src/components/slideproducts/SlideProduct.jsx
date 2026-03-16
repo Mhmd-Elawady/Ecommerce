@@ -35,7 +35,7 @@ const settings = {
 
         <Slider {...settings}>
           {data.map(item => (
-            <div key={item.id}>
+            <div key={item.id} className="slide-item-wrapper">
               <Product item={item} />
             </div>
           ))}
