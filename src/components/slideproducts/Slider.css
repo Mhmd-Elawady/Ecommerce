@@ -1,58 +1,39 @@
-
-
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
 /* ----------------------------------------
    1. CSS Variables - Red & Black Theme
    ---------------------------------------- */
 :root {
-  /* Red Accents - Replacing Blue */
   --red:          #dc2626;
   --red-light:    #ef4444;
   --red-dark:     #b91c1c;
   --red-rgb:      220, 38, 38;
   --red-gradient: linear-gradient(90deg, #dc2626, #ef4444);
   --red-vertical: linear-gradient(180deg, #dc2626, #ec4899);
-
-  /* Gold Accent - Keeping for contrast */
   --gold:          #F5A623;
   --gold-rgb:      245, 166, 35;
-
-  /* Dark Theme Colors - Black & Grays */
-  --ink:           #ffffff;           /* White text */
-  --ink-soft:      #e5e7eb;           /* Light gray */
-  --ink-muted:     #9ca3af;            /* Medium gray */
-  --ink-dark:      #d1d5db;            /* Soft white */
-
-  /* Background Colors - Dark */
-  --canvas:        #0a0a0a;            /* Pure black */
-  --surface:       #1a1a1a;            /* Dark gray */
-  --surface-alt:   #2d2d2d;            /* Lighter gray */
+  --ink:           #ffffff;
+  --ink-soft:      #e5e7eb;
+  --ink-muted:     #9ca3af;
+  --ink-dark:      #d1d5db;
+  --canvas:        #0a0a0a;
+  --surface:       #1a1a1a;
+  --surface-alt:   #2d2d2d;
   --surface-dark:  rgba(0, 0, 0, 0.3);
-
-  /* Borders */
   --border:        rgba(220, 38, 38, 0.15);
   --border-subtle: rgba(255, 255, 255, 0.07);
   --border-light:  1px solid rgba(255, 255, 255, 0.1);
   --border-red:    rgba(220, 38, 38, 0.3);
-
-  /* Shadows */
   --shadow-sm:     0 2px 8px rgba(0, 0, 0, 0.3);
   --shadow-md:     0 10px 28px rgba(0, 0, 0, 0.4);
   --shadow-lg:     0 24px 56px rgba(0, 0, 0, 0.5);
   --shadow-red:    0 12px 32px rgba(220, 38, 38, 0.25);
   --shadow-card:   0 16px 40px rgba(220, 38, 38, 0.2);
-
-  /* Transitions */
   --ease:          cubic-bezier(0.4, 0, 0.2, 1);
   --ease-spring:   cubic-bezier(0.16, 1, 0.3, 1);
   --transition:    all 0.35s var(--ease);
-
-  /* Typography */
   --font-display:  'Fraunces', serif;
   --font-body:     'Plus Jakarta Sans', sans-serif;
-
-  /* Border Radius */
   --radius-sm:     8px;
   --radius:        16px;
   --radius-lg:     24px;
@@ -103,7 +84,6 @@ body {
   padding: 80px 0 100px;
 }
 
-/* Animated dot-grid texture - Red version */
 .slide_products::before {
   content: '';
   position: absolute;
@@ -116,8 +96,6 @@ body {
   z-index: 0;
 }
 
-
-/* Top-right color wash - Red */
 .slide_products::after {
   content: '';
   position: absolute;
@@ -135,7 +113,6 @@ body {
   z-index: 0;
 }
 
-/* Red accent line on top */
 .slide_products .section_accent {
   position: absolute;
   top: 0;
@@ -175,12 +152,10 @@ body {
   position: relative;
 }
 
-/* Left text block */
 .top_slide .top_slide_text {
   flex: 1;
 }
 
-/* Eyebrow label - Red */
 .top_slide .eyebrow {
   display: inline-flex;
   align-items: center;
@@ -205,7 +180,6 @@ body {
   border-radius: var(--radius-pill);
 }
 
-/* Heading - White gradient */
 .top_slide h2 {
   font-family: var(--font-display);
   font-size: 2.8rem;
@@ -224,7 +198,6 @@ body {
   background-clip: text;
 }
 
-/* Underline bar - Red */
 .top_slide h2::after {
   content: '';
   position: absolute;
@@ -241,7 +214,6 @@ body {
   width: 110px;
 }
 
-/* Subtext */
 .top_slide p {
   font-size: 1rem;
   line-height: 1.75;
@@ -252,7 +224,6 @@ body {
   animation: riseIn 0.8s var(--ease-spring) 0.4s forwards;
 }
 
-/* "View all" link - Red */
 .top_slide .view_all {
   flex-shrink: 0;
   display: inline-flex;
@@ -292,12 +263,11 @@ body {
 }
 
 /* ----------------------------------------
-   6. Slick Slider Overrides
+   6. Slick Slider Overrides — FIXED
    ---------------------------------------- */
 .slick-slider {
   position: relative;
 }
-
 
 .slick-list {
   margin: 0 -12px;
@@ -305,12 +275,22 @@ body {
   overflow: hidden;
 }
 
-.slick-slide {
-  padding: 0 12px;
+.slick-track {
+  display: flex !important;
+  align-items: stretch !important;
 }
 
+.slick-slide {
+  padding: 0 12px;
+  height: inherit !important;
+}
+
+/* ✅ الإصلاح الرئيسي — width: 100% هو المفتاح */
 .slick-slide > div {
-  opacity: 1; 
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 1 !important;
+  animation: none !important;
 }
 
 /* ----------------------------------------
@@ -328,9 +308,9 @@ body {
   cursor: pointer;
   transition: transform 0.4s var(--ease-spring), box-shadow 0.4s var(--ease), border-color 0.3s var(--ease);
   height: 100%;
+  width: 100%;
 }
 
-/* Red accent line on left */
 .slide_products .product-card::before {
   content: '';
   position: absolute;
@@ -344,7 +324,6 @@ body {
   z-index: 3;
 }
 
-/* Hover lift */
 .slide_products .product-card:hover {
   transform: translateY(-10px);
   box-shadow: var(--shadow-card);
@@ -372,7 +351,6 @@ body {
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Inner shine */
 .slide_products .product-img-wrap::after {
   content: '';
   position: absolute;
@@ -386,7 +364,6 @@ body {
   z-index: 1;
 }
 
-/* Red accent line on top */
 .slide_products .product-img-wrap::before {
   content: '';
   position: absolute;
@@ -417,7 +394,6 @@ body {
   transform: scale(1.07);
 }
 
-/* Wishlist icon - Red theme */
 .slide_products .wish_btn {
   position: absolute;
   top: 14px;
@@ -489,7 +465,6 @@ body {
   box-shadow: var(--shadow-red);
 }
 
-/* Sale badge variant */
 .slide_products .product-badge.sale {
   background: rgba(245, 166, 35, 0.15);
   color: var(--gold);
@@ -517,7 +492,6 @@ body {
   z-index: 2;
 }
 
-/* Category label */
 .slide_products .product-category {
   font-size: 0.7rem;
   font-weight: 600;
@@ -526,7 +500,6 @@ body {
   color: var(--ink-muted);
 }
 
-/* Title - White */
 .slide_products .product-title {
   font-family: var(--font-display);
   font-size: 1.1rem;
@@ -546,7 +519,6 @@ body {
   color: #dc2626;
 }
 
-/* Description */
 .slide_products .product-description {
   font-size: 0.85rem;
   line-height: 1.65;
@@ -558,7 +530,6 @@ body {
   font-weight: 400;
 }
 
-/* Rating stars - Red */
 .slide_products .product-rating {
   display: flex;
   align-items: center;
@@ -578,7 +549,6 @@ body {
   font-size: 0.85rem;
 }
 
-/* Price row */
 .slide_products .price-row {
   display: flex;
   align-items: center;
@@ -608,7 +578,6 @@ body {
   margin-left: 4px;
 }
 
-/* Quick add button - Red */
 .slide_products .quick_add {
   width: 38px;
   height: 38px;
@@ -660,8 +629,6 @@ body {
   z-index: 10;
   transition: all 0.3s var(--ease-spring) !important;
 }
-
-
 
 .slick-prev:hover,
 .slick-next:hover {
@@ -830,9 +797,6 @@ body {
 }
 
 @media (max-width: 992px) {
-  :root {
-    --spacing-xxxl: 48px;        
-  }
   .slide_products { padding: 60px 0 80px; }
   .top_slide h2   { font-size: 2rem; letter-spacing: -0.8px; }
   .top_slide p    { font-size: 0.95rem; }
@@ -841,10 +805,6 @@ body {
 }
 
 @media (max-width: 768px) {
-  :root {
-    --font-size-hero: 32px;       
-    --spacing-xxl:    32px;       
-  }
   .slide_products { padding: 48px 0 72px; }
   .container      { padding: 0 20px; }
 
@@ -854,9 +814,9 @@ body {
     gap: 16px;
     margin-bottom: 36px;
   }
-  .top_slide h2         { font-size: 1.85rem; letter-spacing: -0.6px; }
-  .top_slide h2::after  { left: 0; }
-  .top_slide .view_all  { align-self: flex-start; }
+  .top_slide h2        { font-size: 1.85rem; letter-spacing: -0.6px; }
+  .top_slide h2::after { left: 0; }
+  .top_slide .view_all { align-self: flex-start; }
 
   .slide_products .product-img-wrap { height: 200px; }
   .slide_products .product-title    { font-size: 1rem; }
@@ -865,11 +825,16 @@ body {
   .slick-prev,
   .slick-next { display: none !important; }
 
-  .slick-list        { margin: 0 -8px; }
-  .slick-slide       { padding: 0 8px; }
-  .slick-slide > div { opacity: 1 !important; animation: none !important; }
-  .slick-slide .product-card,
-  .slick-slide .product {
+  .slick-list  { margin: 0 -8px; }
+  .slick-slide { padding: 0 8px; }
+
+  .slick-slide > div {
+    width: 100% !important;
+    opacity: 1 !important;
+    animation: none !important;
+  }
+
+  .slick-slide .product-card {
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
@@ -877,28 +842,71 @@ body {
 }
 
 @media (max-width: 480px) {
-  :root {
-    --font-size-hero: 28px;      
-    --spacing-xl:     24px;       
-  }
   .slide_products { padding: 36px 0 60px; }
-  .container      { padding: 0 var(--spacing-lg); }  
+  .container      { padding: 0 16px; }
 
-  .top_slide h2 { font-size: 1.65rem; }
-  .top_slide p  { font-size: 0.88rem; }
-  .slide_products .product-img-wrap { height: 180px; }
-  .slide_products .product-info     { padding: 18px 16px 16px; }
+  .top_slide {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
 
-  .slick-list        { margin: 0 -4px; }
-  .slick-slide       { padding: 0 4px; }
-  .slick-slide > div { opacity: 1 !important; animation: none !important; padding: 0 !important; }
-  .slick-slide .product-card,
-  .slick-slide .product {
+  .top_slide .eyebrow  { font-size: 0.65rem; letter-spacing: 2px; }
+  .top_slide h2        { font-size: 1.5rem; letter-spacing: -0.5px; }
+  .top_slide p         { font-size: 0.82rem; line-height: 1.6; }
+  .top_slide .view_all { font-size: 0.78rem; padding: 9px 18px; align-self: flex-start; }
+
+  .slide_products .product-img-wrap   { height: 180px; }
+  .slide_products .product-info       { padding: 14px 12px 12px; gap: 6px; }
+  .slide_products .product-category   { font-size: 0.62rem; }
+  .slide_products .product-title      { font-size: 0.92rem; }
+  .slide_products .product-description {
+    font-size: 0.78rem;
+    -webkit-line-clamp: 1;
+  }
+  .slide_products .product-rating     { font-size: 0.72rem; }
+  .slide_products .price-row          { padding-top: 10px; margin-top: 2px; }
+  .slide_products .product-price      { font-size: 1.15rem; }
+  .slide_products .product-old-price  { font-size: 0.75rem; }
+
+  .slide_products .quick_add     { width: 32px; height: 32px; }
+  .slide_products .quick_add svg { width: 13px; height: 13px; }
+
+  .slide_products .wish_btn     { width: 30px; height: 30px; top: 10px; left: 10px; }
+  .slide_products .wish_btn svg { width: 13px; height: 13px; }
+
+  .slide_products .product-badge { font-size: 0.6rem; padding: 4px 9px; top: 10px; right: 10px; }
+
+  .slick-list  { margin: 0 -4px; }
+  .slick-slide { padding: 0 4px; }
+
+  .slick-slide > div {
+    width: 100% !important;
+    opacity: 1 !important;
+    animation: none !important;
+    padding: 0 !important;
+  }
+
+  .slick-slide .product-card {
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
   }
+
+  .slick-dots              { bottom: -12px !important; }
+  .slick-dots li button    { width: 6px; height: 6px; }
+
+  .slick-dots li button::before {
+    width: 6px;
+    height: 6px;
+  }
+
+  .slick-dots li.slick-active button::before {
+    width: 18px;
+  }
 }
+
 /* ----------------------------------------
    17. Reduced Motion
    ---------------------------------------- */
@@ -921,7 +929,7 @@ body {
     background: white;
     padding: 20px;
   }
-  
+
   .slide_products::before,
   .slide_products::after,
   .slick-prev,
@@ -931,17 +939,17 @@ body {
   .wish_btn {
     display: none !important;
   }
-  
+
   .product-card {
     border: 1px solid #000;
     page-break-inside: avoid;
   }
-  
+
   .product-title {
     color: black !important;
     -webkit-text-fill-color: black !important;
   }
-  
+
   .product-price {
     color: black !important;
     -webkit-text-fill-color: black !important;

@@ -1,54 +1,45 @@
 :root {
-
-  --main_color: #dc2626;       
-  --main_color_hover: #b91c1c;  
-  --main_color_light: #ef4444;  
+  --main_color: #dc2626;
+  --main_color_hover: #b91c1c;
+  --main_color_light: #ef4444;
   --main_gradient: linear-gradient(135deg, #dc2626, #ef4444);
-  
-  
-  --p_color: #9ca3af;           
-  --text_primary: #ffffff;     
-  --text_secondary: #e5e7eb;    
-  --text_muted: #6b7280;        
-  
 
-  --bg_color: #0a0a0a;          
-  --bg_secondary: #1a1a1a;      
-  --bg_card: #2d2d2d;          
+  --p_color: #9ca3af;
+  --text_primary: #ffffff;
+  --text_secondary: #e5e7eb;
+  --text_muted: #6b7280;
+
+  --bg_color: #0a0a0a;
+  --bg_secondary: #1a1a1a;
+  --bg_card: #2d2d2d;
   --bg_overlay: rgba(0, 0, 0, 0.3);
-  
 
   --white_color: #ffffff;
-  --color_heading: #ffffff;   
+  --color_heading: #ffffff;
   --border_color: rgba(255, 255, 255, 0.1);
   --border_color_hover: rgba(220, 38, 38, 0.3);
-  
 
   --shadow_sm: 0 4px 6px rgba(0, 0, 0, 0.3);
   --shadow_md: 0 10px 25px rgba(0, 0, 0, 0.4);
   --shadow_lg: 0 20px 40px rgba(0, 0, 0, 0.5);
   --shadow_red: 0 20px 40px rgba(220, 38, 38, 0.15);
-  
 
   --spacing_xs: 6px;
   --spacing_sm: 12px;
   --spacing_md: 18px;
   --spacing_lg: 24px;
   --spacing_xl: 36px;
-  
-  /* Border Radius */
+
   --radius_sm: 8px;
   --radius_md: 16px;
   --radius_lg: 20px;
   --radius_xl: 24px;
   --radius_full: 9999px;
-  
-  /* Transitions */
+
   --transition_fast: 0.2s ease;
   --transition_normal: 0.3s ease;
   --transition_slow: 0.5s ease;
 }
-
 
 body {
   background: var(--bg_color);
@@ -65,7 +56,6 @@ body {
   position: relative;
   overflow: hidden;
 }
-
 
 .slide_products::before {
   content: '';
@@ -90,7 +80,6 @@ body {
   padding: 15px 20px 20px 0;
   z-index: 1;
 }
-
 
 .top_slide::after {
   content: '';
@@ -142,6 +131,38 @@ body {
 }
 
 /* ========================================
+   SLICK SLIDER — FIXED
+   ======================================== */
+.slick-slider {
+  position: relative;
+  z-index: 1;
+}
+
+.slick-list {
+  margin: 0 -12px;
+  padding: 16px 0 48px;
+  overflow: hidden;
+}
+
+/* ✅ الإصلاح الرئيسي */
+.slick-track {
+  display: flex !important;
+  align-items: stretch !important;
+}
+
+.slick-slide {
+  padding: 0 12px;
+  height: inherit !important;
+}
+
+.slick-slide > div {
+  width: 100% !important;
+  height: 100% !important;
+  opacity: 1 !important;
+  animation: none !important;
+}
+
+/* ========================================
    PRODUCT CARD
    ======================================== */
 .product {
@@ -154,8 +175,9 @@ body {
   position: relative;
   overflow: hidden;
   cursor: pointer;
+  height: 100%;
+  box-sizing: border-box;
 }
-
 
 .product::before {
   content: '';
@@ -194,7 +216,6 @@ body {
   background: rgba(0, 0, 0, 0.2);
   border-radius: var(--radius_sm);
 }
-
 
 .product .img_product::after {
   content: '';
@@ -249,7 +270,7 @@ body {
 }
 
 .product .stars svg {
-  fill: #dc2626;  
+  fill: #dc2626;
   width: 18px;
   height: 18px;
   transition: transform var(--transition_fast);
@@ -308,7 +329,6 @@ body {
   overflow: hidden;
 }
 
-
 .product .icons span::before {
   content: '';
   position: absolute;
@@ -344,7 +364,6 @@ body {
 .product .icons span:hover svg {
   transform: scale(1.1);
 }
-
 
 .product .icons span.in-fav {
   background: #dc2626;
@@ -397,7 +416,7 @@ body {
 }
 
 .product .status_cart svg {
-  color: #10b981;  
+  color: #10b981;
   width: 14px;
   height: 14px;
 }
@@ -462,27 +481,8 @@ body {
 }
 
 /* ========================================
-   ANIMATIONS
+   SHARE MENU
    ======================================== */
-@keyframes shimmer {
-  0% {
-    background-position: -600px 0;
-  }
-  100% {
-    background-position: 600px 0;
-  }
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 .share-menu {
   position: absolute;
   bottom: 110%;
@@ -490,7 +490,7 @@ body {
   background: #fff;
   border: 1px solid #eee;
   border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
   padding: 8px;
   z-index: 999;
   min-width: 160px;
@@ -521,7 +521,97 @@ body {
 }
 
 /* ========================================
-   RESPONSIVE DESIGN
+   ANIMATIONS
+   ======================================== */
+@keyframes shimmer {
+  0%   { background-position: -600px 0; }
+  100% { background-position: 600px 0; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   SLICK ARROWS
+   ======================================== */
+.slick-prev,
+.slick-next {
+  width: 48px !important;
+  height: 48px !important;
+  background: #1a1a1a !important;
+  border-radius: 50% !important;
+  box-shadow: var(--shadow_md) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  z-index: 10;
+  transition: all var(--transition_normal) !important;
+}
+
+.slick-prev:hover,
+.slick-next:hover {
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+  box-shadow: var(--shadow_red) !important;
+}
+
+.slick-prev::before,
+.slick-next::before {
+  color: #fff !important;
+  font-size: 18px !important;
+  opacity: 1 !important;
+}
+
+/* ========================================
+   SLICK DOTS
+   ======================================== */
+.slick-dots {
+  bottom: -8px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.slick-dots li {
+  margin: 0 !important;
+  width: auto !important;
+  height: auto !important;
+}
+
+.slick-dots li button {
+  width: 8px;
+  height: 8px;
+  padding: 0 !important;
+}
+
+.slick-dots li button::before {
+  content: '' !important;
+  width: 8px;
+  height: 8px;
+  background: var(--p_color);
+  opacity: 0.25;
+  border-radius: var(--radius_full);
+  transition: all 0.35s ease;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.slick-dots li.slick-active button::before {
+  width: 24px;
+  background: #dc2626;
+  opacity: 1;
+}
+
+/* ========================================
+   RESPONSIVE
    ======================================== */
 @media (max-width: 1200px) {
   .products_container {
@@ -529,25 +619,17 @@ body {
   }
 }
 
-
 @media (max-width: 992px) {
-  :root {
-    --spacing-xxxl: 48px;
-  }
   .slide_products { padding: 60px 0 80px; }
-  .top_slide h2   { font-size: 2rem; letter-spacing: -0.8px; }
+  .top_slide h2   { font-size: 1.8rem; }
   .top_slide p    { font-size: 0.95rem; }
   .slick-prev     { left: -10px !important; }
   .slick-next     { right: -10px !important; }
 }
 
 @media (max-width: 768px) {
-  :root {
-    --font-size-hero: 32px;
-    --spacing-xxl:    32px;
-  }
-  .slide_products  { padding: 48px 0 72px; }
-  .container       { padding: 0 20px; }
+  .slide_products { padding: 48px 0 72px; }
+  .container      { padding: 0 20px; }
 
   .top_slide {
     flex-direction: column;
@@ -555,61 +637,120 @@ body {
     gap: 16px;
     margin-bottom: 36px;
   }
-  .top_slide h2            { font-size: 1.85rem; letter-spacing: -0.6px; }
-  .top_slide .view_all     { align-self: flex-start; }
-  .slide_products .product-img-wrap { height: 200px; }
-  .slide_products .product-title    { font-size: 1rem; }
-  .slide_products .product-price    { font-size: 1.2rem; }
+
+  .top_slide h2   { font-size: 1.6rem; }
+  .top_slide p    { font-size: 0.9rem; }
 
   .slick-prev,
   .slick-next { display: none !important; }
 
-  .slick-list         { margin: 0 -8px; }
-  .slick-slide        { padding: 0 8px; }
-  .slick-slide > div  { opacity: 1 !important; animation: none !important; }
-  .slick-slide .product-card,
+  .slick-list  { margin: 0 -8px; }
+  .slick-slide { padding: 0 8px; }
+
+  .slick-slide > div {
+    width: 100% !important;
+    opacity: 1 !important;
+    animation: none !important;
+  }
+
   .slick-slide .product {
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
+  }
+
+  .product .icons {
+    right: 15px;
+    opacity: 1;
+  }
+
+  .product:hover .icons {
+    right: 15px;
   }
 }
 
 @media (max-width: 480px) {
-  :root {
-    --font-size-hero: 28px;
-    --spacing-xl:     24px;
+  .slide_products { padding: 36px 0 60px; }
+  .container      { padding: 0 16px; }
+
+  .top_slide h2 { font-size: 1.4rem; }
+  .top_slide p  { font-size: 0.82rem; }
+
+  .product { padding: 18px 12px; }
+
+  .product .img_product {
+    height: 150px;
+    margin-bottom: 20px;
   }
-  .slide_products  { padding: 36px 0 60px; }
-  .container       { padding: 0 var(--spacing-lg); }   
 
-  .top_slide h2            { font-size: 1.65rem; }
-  .top_slide p             { font-size: 0.88rem; }
-  .slide_products .product-img-wrap { height: 180px; }
-  .slide_products .product-info     { padding: 18px 16px 16px; }
-  .slide_products .products_grid    { grid-template-columns: 1fr; }  
+  .product .img_product img {
+    height: 130px;
+  }
 
-  .slick-list         { margin: 0 -4px; }
-  .slick-slide        { padding: 0 4px; }
-  .slick-slide > div  { opacity: 1 !important; animation: none !important; padding: 0 !important; }
-  .slick-slide .product-card,
+  .product .name_product { font-size: 15px; }
+  .product .price        { font-size: 18px; }
+
+  .product .stars svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* ✅ الأيقونات تظهر دائماً في الموبايل بدل hover */
+  .product .icons {
+    position: static;
+    transform: none;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 12px;
+    right: auto;
+  }
+
+  .product:hover .icons {
+    right: auto;
+  }
+
+  .product .icons span {
+    width: 34px;
+    height: 34px;
+  }
+
+  .product .icons span svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .slick-list  { margin: 0 -4px; }
+  .slick-slide { padding: 0 4px; }
+
+  .slick-slide > div {
+    width: 100% !important;
+    opacity: 1 !important;
+    animation: none !important;
+    padding: 0 !important;
+  }
+
   .slick-slide .product {
     width: 100% !important;
     max-width: 100% !important;
     margin: 0 !important;
   }
+
+  .slick-dots              { bottom: -12px !important; }
+  .slick-dots li button::before { width: 6px; height: 6px; }
+  .slick-dots li.slick-active button::before { width: 18px; }
 }
+
 /* ========================================
    REDUCED MOTION
    ======================================== */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+
+  .slick-slide > div { opacity: 1; }
 }
 
 /* ========================================
@@ -620,21 +761,21 @@ body {
     background: white;
     padding: 20px;
   }
-  
+
   .product {
     border: 1px solid #000;
     box-shadow: none;
   }
-  
+
   .product .name_product {
     color: black;
   }
-  
+
   .product .price {
     color: black;
     -webkit-text-fill-color: black;
   }
-  
+
   .product .icons,
   .product .status_cart {
     display: none;
