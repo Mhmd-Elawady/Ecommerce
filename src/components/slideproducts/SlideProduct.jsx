@@ -7,29 +7,28 @@ import './slideProduct.css';
 import './Slider.css'
 function SlideProduct({ data, title }) {
   if (!data || data.length === 0) return null;
-
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 5,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 2500,
+const settings = {
+  dots: true,
+  infinite: true,
+  speed: 300,
+  slidesToShow: 5,
+  slidesToScroll: 1,
+  autoplay: true,
+  autoplaySpeed: 2500,
   responsive: [
-  { breakpoint: 1200, settings: { slidesToShow: 4 } },
-  { breakpoint: 1024, settings: { slidesToShow: 3 } },
-  { breakpoint: 768,  settings: { slidesToShow: 2 } },
-  { breakpoint: 480,  settings: { slidesToShow: 1, arrows: false } },
-]
-  };
-
+    { breakpoint: 1200, settings: { slidesToShow: 4, slidesToScroll: 1 } },
+    { breakpoint: 1024, settings: { slidesToShow: 3, slidesToScroll: 1 } },
+    { breakpoint: 992,  settings: { slidesToShow: 2, slidesToScroll: 1, arrows: false } },
+    { breakpoint: 768,  settings: { slidesToShow: 2, slidesToScroll: 1, arrows: false } },
+    { breakpoint: 480,  settings: { slidesToShow: 1, slidesToScroll: 1, arrows: false } },
+  ]
+};
   return (
     <div className="slide_products slide">
       <div className="container">
         <div className="top_slide">
           <h2>{title}</h2>
-          <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+          
         </div>
 
         <Slider {...settings}>
