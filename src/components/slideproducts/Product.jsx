@@ -5,9 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { CartContext } from '../Context/CartContext';
 import { FaCheck } from "react-icons/fa";
 import toast from 'react-hot-toast';
-import './slideproduct.css';
-import './Product.css';
-import './Slider.css';
+
 
 function Product({item}) {
 

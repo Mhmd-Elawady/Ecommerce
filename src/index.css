@@ -108,7 +108,6 @@ a:hover {
 }
 
 
-/* تنسيقات Skeleton Loading */
 .skeltion {
   background: linear-gradient(90deg, #1a1a1a 25%, #2d2d2d 50%, #1a1a1a 75%);
   background-size: 200% 100%;
@@ -125,7 +124,7 @@ a:hover {
   }
 }
 
-/* تنسيقات Toast Notifications */
+
 .toast-wrapper {
   display: flex;
   align-items: center;
@@ -190,7 +189,6 @@ a:hover {
   width: 100%;
 }
 
-/* تنسيقات إضافية */
 .section_title {
   font-size: 2.5rem;
   margin-bottom: var(--spacing_lg);
@@ -214,7 +212,7 @@ a:hover {
   width: 100px;
 }
 
-/* تنسيقات البطاقات */
+
 .card {
   background: linear-gradient(145deg, #1a1a1a, #2d2d2d);
   border: 1px solid var(--border_color);
@@ -247,7 +245,7 @@ a:hover {
   opacity: 1;
 }
 
-/* تنسيقات القوائم */
+
 .list_item {
   display: flex;
   align-items: center;
@@ -276,7 +274,7 @@ a:hover {
   transform: rotate(180deg) scale(1.2);
 }
 
-/* تنسيقات الفورم */
+
 .form_group {
   margin-bottom: var(--spacing_md);
 }
@@ -309,7 +307,6 @@ a:hover {
   font-weight: 500;
 }
 
-/* تنسيقات التبويجات */
 .tag {
   display: inline-block;
   padding: 6px 14px;
@@ -331,7 +328,7 @@ a:hover {
   transform: translateY(-2px);
 }
 
-/* تنسيقات الشارات */
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -351,7 +348,7 @@ a:hover {
   color: var(--main_color);
 }
 
-/* تنسيقات التحميل */
+
 .loading_spinner {
   width: 40px;
   height: 40px;
@@ -367,7 +364,6 @@ a:hover {
   }
 }
 
-/* تنسيقات متجاوبة */
 @media (max-width: 1200px) {
   .container {
     width: 95%;
