@@ -7,6 +7,8 @@ import { FaCheck } from "react-icons/fa";
 import toast from 'react-hot-toast';
 import './slideproduct.css';
 import './Product.css';
+import './Slider.css';
+
 function Product({item}) {
 
   const navigate = useNavigate()
