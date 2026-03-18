@@ -1,23 +1,23 @@
-
-
 /* ----------------------------------------
-   1. CSS Variables (Inspired by About Page)
+   1. CSS Variables
    ---------------------------------------- */
-:root {
-  --primary:        #dc2626;        /* Red from About page */
-  --primary-light:  #ec4899;        /* Pinkish gradient end */
-  --primary-rgb:     220, 38, 38;
+@import url('https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;600;700;800&family=Satoshi:wght@400;500;600;700&display=swap');
 
-  --green:          #12B76A;        /* Keep for free shipping */
+:root {
+  --primary:        #dc2626;
+  --primary-light:  #ec4899;
+  --primary-rgb:    220, 38, 38;
+
+  --green:          #12B76A;
   --green-rgb:      18, 183, 106;
 
   --ink:            #FFFFFF;
   --ink-soft:       #d1d5db;
   --ink-muted:      #9ca3af;
 
-  --canvas:         #0a0a0a;         /* Deep black background */
-  --surface:        #1a1a1a;         /* Dark gray surface */
-  --surface-alt:    #2d2d2d;         /* Lighter gray for cards */
+  --canvas:         #0a0a0a;
+  --surface:        #1a1a1a;
+  --surface-alt:    #2d2d2d;
 
   --border:         rgba(255, 255, 255, 0.1);
   --border-strong:  rgba(255, 255, 255, 0.15);
@@ -40,26 +40,29 @@
 }
 
 /* ----------------------------------------
-   2. Base
+   2. Base Reset
    ---------------------------------------- */
-*, *::before, *::after { box-sizing: border-box; }
-
-body {
-  font-family: var(--font-body);
-  background: linear-gradient(135deg, var(--canvas) 0%, #111111 100%);
-  color: var(--ink);
-  -webkit-font-smoothing: antialiased;
-  min-height: 100vh;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 /* ----------------------------------------
-   3. Checkout Page
+   3. Checkout Wrapper
    ---------------------------------------- */
 .checkout {
-  margin: 64px auto;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
-  padding: 0 20px;
+  align-items: flex-start;
+  padding: 64px 20px;
+  background: linear-gradient(135deg, var(--canvas) 0%, #111111 100%);
+  font-family: var(--font-body);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
 }
 
 /* ----------------------------------------
@@ -75,9 +78,21 @@ body {
   overflow: hidden;
   position: relative;
   backdrop-filter: blur(10px);
+  animation: cardIn 0.5s var(--ease-spring) both;
 }
 
-/* Top gradient bar - Red to pink */
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Top gradient bar */
 .checkout .ordersummary::before {
   content: '';
   position: absolute;
@@ -86,6 +101,7 @@ body {
   right: 0;
   height: 3px;
   background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+  z-index: 2;
 }
 
 /* ----------------------------------------
@@ -108,11 +124,10 @@ body {
 .checkout .ordersummary h1::before {
   content: '🛒';
   font-size: 1.1rem;
-  color: var(--primary);
 }
 
 /* ----------------------------------------
-   6. Item List
+   6. Items List
    ---------------------------------------- */
 .checkout .items {
   max-height: 360px;
@@ -125,17 +140,22 @@ body {
 .checkout .items::-webkit-scrollbar {
   width: 4px;
 }
-.checkout .items::-webkit-scrollbar-track { background: transparent; }
+
+.checkout .items::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 .checkout .items::-webkit-scrollbar-thumb {
   background: var(--primary);
   border-radius: var(--radius-pill);
 }
+
 .checkout .items::-webkit-scrollbar-thumb:hover {
   background: var(--primary-light);
 }
 
 /* ----------------------------------------
-   7. Cart Item
+   7. Cart Item Row
    ---------------------------------------- */
 .checkout .items .item_cart {
   display: flex;
@@ -144,15 +164,27 @@ body {
   gap: 16px;
   padding: 18px 0;
   border-bottom: 1px solid var(--border);
-  transition: background 0.2s var(--ease);
   position: relative;
+  transition: background 0.2s var(--ease);
+  animation: itemIn 0.4s var(--ease-spring) both;
+}
+
+@keyframes itemIn {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .checkout .items .item_cart:last-child {
   border-bottom: none;
 }
 
-/* Hover highlight band - More subtle in dark mode */
+/* Hover glow band */
 .checkout .items .item_cart::before {
   content: '';
   position: absolute;
@@ -174,7 +206,9 @@ body {
   z-index: 1;
 }
 
-/* Image + Name group */
+/* ----------------------------------------
+   8. Image + Name Group (Left side)
+   ---------------------------------------- */
 .checkout .items .item_cart .image_name {
   display: flex;
   align-items: center;
@@ -203,7 +237,7 @@ body {
   box-shadow: 0 4px 14px rgba(var(--primary-rgb), 0.2);
 }
 
-.checkout .items .item_cart img {
+.checkout .items .item_cart .img_item img {
   width: auto;
   height: 52px;
   max-width: 60px;
@@ -211,7 +245,7 @@ body {
   transition: transform 0.35s var(--ease-spring);
 }
 
-.checkout .items .item_cart:hover img {
+.checkout .items .item_cart:hover .img_item img {
   transform: scale(1.08);
 }
 
@@ -222,7 +256,7 @@ body {
   font-weight: 600;
   color: var(--ink);
   line-height: 1.4;
-  margin: 0 0 6px;
+  margin: 0 0 5px;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -230,14 +264,17 @@ body {
   -webkit-box-orient: vertical;
 }
 
-/* Item unit price */
+/* Unit price label */
 .checkout .items .item_cart .unit_price {
   font-size: 0.8rem;
   color: var(--ink-muted);
   font-weight: 500;
+  display: block;
 }
 
-/* Right side: quantity + price + delete */
+/* ----------------------------------------
+   9. Right Side (price + qty + delete)
+   ---------------------------------------- */
 .checkout .items .item_cart .item_right {
   display: flex;
   flex-direction: column;
@@ -246,21 +283,21 @@ body {
   flex-shrink: 0;
 }
 
-/* Item total price - Now in red */
+/* Item total price */
 .checkout .items .item_cart .item_price {
   font-family: var(--font-display);
   font-size: 1rem;
   font-weight: 700;
   color: var(--primary);
+  white-space: nowrap;
 }
 
 /* ----------------------------------------
-   8. Quantity Control
+   10. Quantity Control
    ---------------------------------------- */
 .checkout .items .item_cart .quantity_control {
   display: flex;
   align-items: center;
-  gap: 0;
   border: 1px solid var(--border-strong);
   border-radius: var(--radius-sm);
   overflow: hidden;
@@ -269,7 +306,7 @@ body {
 }
 
 .checkout .items .item_cart .quantity_control button {
-  width: 50px;
+  width: 32px;
   height: 30px;
   border: none;
   background: var(--surface-alt);
@@ -282,21 +319,26 @@ body {
   justify-content: center;
   transition: background 0.2s var(--ease), color 0.2s var(--ease);
   outline: none;
+  line-height: 1;
 }
 
 .checkout .items .item_cart .quantity_control button:hover {
   background: var(--primary);
-  color: var(--canvas);
+  color: #fff;
+}
+
+.checkout .items .item_cart .quantity_control button:active {
+  transform: scale(0.92);
 }
 
 .checkout .items .item_cart .quantity_control .quantity {
-  min-width: 50px;
+  min-width: 36px;
   height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-family: var(--font-display);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--ink);
   background: rgba(0, 0, 0, 0.3);
@@ -306,7 +348,7 @@ body {
 }
 
 /* ----------------------------------------
-   9. Delete Button
+   11. Delete Button
    ---------------------------------------- */
 .checkout .items .item_cart .delete_item {
   outline: none;
@@ -319,23 +361,59 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.2s var(--ease), transform 0.2s var(--ease-spring);
   color: var(--primary);
+  transition: background 0.2s var(--ease), transform 0.2s var(--ease-spring);
 }
 
 .checkout .items .item_cart .delete_item:hover {
-  background: rgba(var(--primary-rgb), 0.1);
+  background: rgba(var(--primary-rgb), 0.12);
   transform: scale(1.12);
 }
 
+.checkout .items .item_cart .delete_item:active {
+  transform: scale(0.9);
+}
+
 .checkout .items .item_cart .delete_item svg {
-  font-size: 18px;
+  width: 15px;
+  height: 15px;
   fill: var(--primary);
   display: block;
+  pointer-events: none;
 }
 
 /* ----------------------------------------
-   10. Order Summary Footer
+   12. Empty Cart State
+   ---------------------------------------- */
+.checkout .items .empty_cart {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 52px 0;
+  gap: 12px;
+  color: var(--ink-muted);
+  text-align: center;
+  animation: fadeIn 0.4s var(--ease) both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.checkout .items .empty_cart svg {
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+.checkout .items .empty_cart p {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* ----------------------------------------
+   13. Bottom Summary Footer
    ---------------------------------------- */
 .checkout .bottom_summary {
   border-top: 1px solid var(--border);
@@ -355,6 +433,7 @@ body {
   font-size: 0.95rem;
   color: var(--ink-soft);
   font-weight: 500;
+  margin: 0;
 }
 
 .checkout .bottom_summary .shop_table .value {
@@ -363,14 +442,16 @@ body {
   color: var(--ink);
 }
 
-/* Free shipping tag */
+/* Free shipping badge */
 .checkout .bottom_summary .shop_table .free_tag {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--green);
   background: rgba(var(--green-rgb), 0.1);
   padding: 3px 10px;
   border-radius: var(--radius-pill);
+  border: 1px solid rgba(var(--green-rgb), 0.2);
+  letter-spacing: 0.3px;
 }
 
 /* Total row */
@@ -378,8 +459,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 0 20px;
-  margin-top: 6px;
+  padding: 16px 0 20px;
+  margin-top: 4px;
+  border-top: 1px solid var(--border);
 }
 
 .checkout .bottom_summary .total_row .total_label {
@@ -398,7 +480,7 @@ body {
 }
 
 /* ----------------------------------------
-   11. Checkout Button - Redesign with red
+   14. Checkout Button
    ---------------------------------------- */
 .checkout .bottom_summary .button_div {
   border-top: 1px solid var(--border);
@@ -409,7 +491,7 @@ body {
   width: 100%;
   position: relative;
   background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-  color: var(--ink);
+  color: #fff;
   border: none;
   padding: 16px 0;
   border-radius: var(--radius);
@@ -419,7 +501,7 @@ body {
   letter-spacing: 0.3px;
   cursor: pointer;
   overflow: hidden;
-  transition: transform 0.25s var(--ease-spring), box-shadow 0.25s var(--ease);
+  transition: transform 0.25s var(--ease-spring), box-shadow 0.25s var(--ease), opacity 0.2s;
   box-shadow: var(--shadow-primary);
   display: flex;
   align-items: center;
@@ -427,7 +509,7 @@ body {
   gap: 10px;
 }
 
-/* Shimmer sweep on hover */
+/* Shimmer sweep */
 .checkout .bottom_summary .button_div button::before {
   content: '';
   position: absolute;
@@ -438,38 +520,38 @@ body {
   background: linear-gradient(
     120deg,
     transparent,
-    rgba(255, 255, 255, 0.15),
+    rgba(255, 255, 255, 0.18),
     transparent
   );
-  transition: left 0.5s var(--ease);
+  transition: left 0.55s var(--ease);
   pointer-events: none;
 }
 
-.checkout .bottom_summary .button_div button:hover::before {
+.checkout .bottom_summary .button_div button:not(:disabled):hover::before {
   left: 150%;
 }
 
-.checkout .bottom_summary .button_div button:hover {
+.checkout .bottom_summary .button_div button:not(:disabled):hover {
   transform: translateY(-3px);
   box-shadow: 0 14px 36px rgba(var(--primary-rgb), 0.4);
 }
 
-.checkout .bottom_summary .button_div button:active {
+.checkout .bottom_summary .button_div button:not(:disabled):active {
   transform: translateY(-1px);
 }
 
-/* Arrow icon in button */
+/* Arrow icon */
 .checkout .bottom_summary .button_div button::after {
   content: '→';
   font-size: 1.15rem;
   transition: transform 0.3s var(--ease-spring);
 }
 
-.checkout .bottom_summary .button_div button:hover::after {
+.checkout .bottom_summary .button_div button:not(:disabled):hover::after {
   transform: translateX(5px);
 }
 
-/* Secure checkout note */
+/* Secure note */
 .checkout .bottom_summary .secure_note {
   display: flex;
   align-items: center;
@@ -483,43 +565,26 @@ body {
 }
 
 .checkout .bottom_summary .secure_note::before {
-  content: '🔒';
+  content: '';
   font-size: 0.75rem;
-  color: var(--primary);
 }
 
 /* ----------------------------------------
-   12. Empty Cart State
+   15. Responsive — Tablet (max 768px)
    ---------------------------------------- */
-.checkout .items .empty_cart {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 0;
-  gap: 12px;
-  color: var(--ink-muted);
-  text-align: center;
-}
-
-.checkout .items .empty_cart svg {
-  font-size: 48px;
-  fill: rgba(220, 38, 38, 0.2);
-  margin-bottom: 8px;
-}
-
-.checkout .items .empty_cart p {
-  font-size: 0.95rem;
-  font-weight: 500;
+@media (max-width: 768px) {
+  .checkout {
+    padding: 48px 16px;
+    align-items: flex-start;
+  }
 }
 
 /* ----------------------------------------
-   13. Responsive (Keep your existing)
+   16. Responsive — Mobile (max 600px)
    ---------------------------------------- */
 @media (max-width: 600px) {
   .checkout {
-    margin: 32px auto;
-    padding: 0 12px;
+    padding: 24px 12px 40px;
   }
 
   .checkout .ordersummary {
@@ -527,13 +592,18 @@ body {
   }
 
   .checkout .ordersummary h1 {
-    font-size: 1.15rem;
-    padding: 22px 20px 16px;
+    font-size: 1.1rem;
+    padding: 20px 18px 16px;
   }
 
   .checkout .items {
-    padding: 0 20px;
+    padding: 0 18px;
     max-height: 300px;
+  }
+
+  .checkout .items .item_cart {
+    gap: 12px;
+    padding: 14px 0;
   }
 
   .checkout .items .item_cart .img_item {
@@ -542,28 +612,78 @@ body {
     min-width: 58px;
   }
 
-  .checkout .items .item_cart img {
-    height: 42px;
+  .checkout .items .item_cart .img_item img {
+    height: 40px;
   }
 
   .checkout .items .item_cart h4 {
     font-size: 0.82rem;
   }
 
+  .checkout .items .item_cart .unit_price {
+    font-size: 0.74rem;
+  }
+
+  .checkout .items .item_cart .item_price {
+    font-size: 0.9rem;
+  }
+
+  .checkout .items .item_cart .quantity_control button {
+    width: 28px;
+    font-size: 14px;
+  }
+
+  .checkout .items .item_cart .quantity_control .quantity {
+    min-width: 30px;
+    font-size: 0.82rem;
+  }
+
   .checkout .bottom_summary {
-    padding: 20px 20px 0;
+    padding: 20px 18px 0;
   }
 
-  .checkout .bottom_summary .button_div {
-    padding: 20px 0 24px;
-  }
-
-  .checkout .bottom_summary .button_div button {
-    font-size: 0.95rem;
-    padding: 14px 0;
+  .checkout .bottom_summary .shop_table p,
+  .checkout .bottom_summary .shop_table .value {
+    font-size: 0.88rem;
   }
 
   .checkout .bottom_summary .total_checkout {
     font-size: 1.3rem;
+  }
+
+  .checkout .bottom_summary .button_div {
+    padding: 20px 0 22px;
+  }
+
+  .checkout .bottom_summary .button_div button {
+    font-size: 0.92rem;
+    padding: 14px 0;
+  }
+}
+
+/* ----------------------------------------
+   17. Responsive — Very Small (max 380px)
+   ---------------------------------------- */
+@media (max-width: 380px) {
+  .checkout .items .item_cart .img_item {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+  }
+
+  .checkout .items .item_cart .img_item img {
+    height: 34px;
+  }
+
+  .checkout .items .item_cart h4 {
+    font-size: 0.76rem;
+  }
+
+  .checkout .items .item_cart .item_right {
+    gap: 6px;
+  }
+
+  .checkout .bottom_summary .total_checkout {
+    font-size: 1.15rem;
   }
 }
