@@ -6,8 +6,6 @@ import {
   FaEye,
   FaEyeSlash,
   FaGoogle,
-  FaFacebook,
-  FaApple,
 } from "react-icons/fa";
 import PageTransition from "../../components/PageTransition";
 import { supabase } from "../../supabaseClient";
@@ -189,24 +187,6 @@ function Login() {
                 >
                   <FaGoogle />
                   <span>Google</span>
-                </button>
-                <button
-                  className="social-btn facebook"
-                  type="button"
-                  onClick={() => handleSocialLogin("facebook")}
-                  disabled={loading}
-                >
-                  <FaFacebook />
-                  <span>Facebook</span>
-                </button>
-                <button
-                  className="social-btn apple"
-                  type="button"
-                  onClick={() => handleSocialLogin("apple")}
-                  disabled={loading}
-                >
-                  <FaApple />
-                  <span>Apple</span>
                 </button>
               </div>
             </div>

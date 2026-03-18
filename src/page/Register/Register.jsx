@@ -7,8 +7,6 @@ import {
   FaEye,
   FaEyeSlash,
   FaGoogle,
-  FaFacebook,
-  FaApple,
   FaPhone,
   FaCheckCircle,
 } from "react-icons/fa";
@@ -319,24 +317,6 @@ function Register() {
                 >
                   <FaGoogle />
                   <span>Google</span>
-                </button>
-                <button
-                  type="button"
-                  className="social-btn facebook"
-                  onClick={() => handleSocialLogin("facebook")}
-                  disabled={loading}
-                >
-                  <FaFacebook />
-                  <span>Facebook</span>
-                </button>
-                <button
-                  type="button"
-                  className="social-btn apple"
-                  onClick={() => handleSocialLogin("apple")}
-                  disabled={loading}
-                >
-                  <FaApple />
-                  <span>Apple</span>
                 </button>
               </div>
             </div>
