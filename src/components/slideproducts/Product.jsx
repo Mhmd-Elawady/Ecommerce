@@ -52,7 +52,7 @@ function Product({item}) {
     const shareData = {
       title: item.title,
       text: `Check out this product: ${item.title}`,
-      url: window.location.origin + `/products/${item.id}`
+      url: window.location.origin + `/products/${item.id}${item.source ? `?source=${item.source}` : ''}`
     };
 
     try {
@@ -69,7 +69,7 @@ function Product({item}) {
 
   return (
     <div className={`product ${isInCart ? 'in-cart' : ''}`}>
-        <Link to={`/products/${item.id}`}>
+       <Link to={`/products/${item.id}${item.source ? `?source=${item.source}` : ''}`}>
 
         <span className='status_cart'><FaCheck /> in cart</span>
         

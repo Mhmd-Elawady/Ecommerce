@@ -19,6 +19,7 @@ const normalizeProduct = (data) => ({
   category: data.category,
   stock: 10,
   availabilityStatus: "In Stock",
+   source: "fakestore", 
 });
 
 function ProductDetails() {
