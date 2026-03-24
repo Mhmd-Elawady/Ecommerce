@@ -1,17 +1,18 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback, useRef, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaUser, FaEnvelope, FaPhone, FaEdit, FaSave,
-  FaTimes, FaShoppingBag, FaHeart, FaShieldAlt,
-  FaCheckCircle, FaTimesCircle, FaBoxOpen, FaBox,
+  FaTimes, FaShoppingBag, FaShieldAlt,
+  FaCheckCircle, FaTimesCircle,
   FaCamera, FaLock, FaEye, FaEyeSlash, FaKey,
-  FaChevronRight
+  FaShoppingCart, FaPlus, FaMinus, FaTrash
 } from "react-icons/fa";
 import PageTransition from "../../components/PageTransition";
 import Footer from "../../components/Footer/Footer";
 import LogoutButton from "../../components/LogoutButton";
 import { useAuth } from "../../hooks/useAuth";
-import { useUserProfile, useUserOrders, useUserWishlist } from "../../hooks/useUserData";
+import { useUserProfile } from "../../hooks/useUserData";
+import { CartContext } from "../../components/Context/CartContext"; 
 import "./UserProfile.css";
 import toast from "react-hot-toast";
 
@@ -20,7 +21,7 @@ import toast from "react-hot-toast";
 const getInitials = (name) =>
   name ? name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase() : "?";
 
-// ─── Avatar with upload ───────────────────────────────────────────────────────
+// ─── Avatar ───────────────────────────────────────────────────────────────────
 
 function Avatar({ name, src, size = 80, onUpload }) {
   const fileRef = useRef();
@@ -32,20 +33,12 @@ function Avatar({ name, src, size = 80, onUpload }) {
     if (!file) return;
     if (!file.type.startsWith("image/")) { toast.error("Please select an image file"); return; }
     if (file.size > 5 * 1024 * 1024) { toast.error("Image must be under 5 MB"); return; }
-
     setPreview(URL.createObjectURL(file));
-
     if (onUpload) {
       setUploading(true);
-      try {
-        await onUpload(file);
-        toast.success("Profile photo updated!");
-      } catch {
-        toast.error("Failed to upload photo");
-        setPreview(src || null);
-      } finally {
-        setUploading(false);
-      }
+      try { await onUpload(file); toast.success("Profile photo updated!"); }
+      catch { toast.error("Failed to upload photo"); setPreview(src || null); }
+      finally { setUploading(false); }
     }
   };
 
@@ -58,42 +51,13 @@ function Avatar({ name, src, size = 80, onUpload }) {
     >
       {preview
         ? <img src={preview} alt={name || "avatar"} className="avatar-img" />
-        : <span className="avatar-initials">{getInitials(name)}</span>
-      }
+        : <span className="avatar-initials">{getInitials(name)}</span>}
       {onUpload && (
         <div className="avatar-overlay">
           {uploading ? <span className="avatar-spinner" /> : <FaCamera className="avatar-camera-icon" />}
         </div>
       )}
       {onUpload && <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleFile} />}
-    </div>
-  );
-}
-
-// ─── Status Badge ─────────────────────────────────────────────────────────────
-
-function StatusBadge({ status }) {
-  const map = {
-    delivered:  { cls: "green",  label: "Delivered"  },
-    pending:    { cls: "yellow", label: "Pending"    },
-    cancelled:  { cls: "red",    label: "Cancelled"  },
-    processing: { cls: "blue",   label: "Processing" },
-    shipped:    { cls: "purple", label: "Shipped"    },
-  };
-  const { cls = "gray", label = status } = map[status?.toLowerCase()] ?? {};
-  return <span className={`status-badge status-${cls}`}>{label}</span>;
-}
-
-// ─── Info Row ─────────────────────────────────────────────────────────────────
-
-function InfoRow({ icon, label, value, mono = false }) {
-  return (
-    <div className="info-item">
-      <span className="info-label">
-        {icon && <span className="info-icon">{icon}</span>}
-        {label}
-      </span>
-      <span className={`info-value${mono ? " mono" : ""}`}>{value || "Not set"}</span>
     </div>
   );
 }
@@ -115,6 +79,20 @@ function SectionCard({ title, icon, children, action }) {
   );
 }
 
+// ─── Info Row ─────────────────────────────────────────────────────────────────
+
+function InfoRow({ icon, label, value, mono = false }) {
+  return (
+    <div className="info-item">
+      <span className="info-label">
+        {icon && <span className="info-icon">{icon}</span>}
+        {label}
+      </span>
+      <span className={`info-value${mono ? " mono" : ""}`}>{value || "Not set"}</span>
+    </div>
+  );
+}
+
 // ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 function Skeleton({ rows = 3 }) {
@@ -133,11 +111,9 @@ function PasswordInput({ id, name, value, onChange, placeholder, disabled }) {
   const [show, setShow] = useState(false);
   return (
     <div className="password-input-wrap">
-      <input
-        id={id} type={show ? "text" : "password"} name={name}
+      <input id={id} type={show ? "text" : "password"} name={name}
         value={value} onChange={onChange} placeholder={placeholder}
-        disabled={disabled} autoComplete="new-password"
-      />
+        disabled={disabled} autoComplete="new-password" />
       <button type="button" className="toggle-pw" onClick={() => setShow(s => !s)} tabIndex={-1}>
         {show ? <FaEyeSlash /> : <FaEye />}
       </button>
@@ -149,16 +125,12 @@ function PasswordInput({ id, name, value, onChange, placeholder, disabled }) {
 
 function PasswordStrength({ password }) {
   const score = [
-    password.length >= 8,
-    /[A-Z]/.test(password),
-    /[0-9]/.test(password),
-    /[^A-Za-z0-9]/.test(password),
+    password.length >= 8, /[A-Z]/.test(password),
+    /[0-9]/.test(password), /[^A-Za-z0-9]/.test(password),
   ].filter(Boolean).length;
-
   const colors = ["", "#ef4444", "#f59e0b", "#3b82f6", "#22c55e"];
   const labels = ["", "Weak", "Fair", "Good", "Strong"];
   if (!password) return null;
-
   return (
     <div className="pw-strength">
       <div className="pw-bars">
@@ -177,47 +149,38 @@ function PasswordStrength({ password }) {
 function ChangePasswordForm({ onClose }) {
   const [form, setForm] = useState({ current: "", next: "", confirm: "" });
   const [saving, setSaving] = useState(false);
-
   const handle = useCallback((e) => {
     const { name, value } = e.target;
     setForm(f => ({ ...f, [name]: value }));
   }, []);
-
   const submit = async (e) => {
     e.preventDefault();
-    if (!form.current)          { toast.error("Enter your current password"); return; }
-    if (form.next.length < 8)   { toast.error("New password must be at least 8 characters"); return; }
+    if (!form.current) { toast.error("Enter your current password"); return; }
+    if (form.next.length < 8) { toast.error("New password must be at least 8 characters"); return; }
     if (form.next !== form.confirm) { toast.error("Passwords do not match"); return; }
-
     setSaving(true);
     try {
-      // 🔌 Replace with your real API call:
-      // await supabase.auth.updateUser({ password: form.next })
+      // 🔌 await supabase.auth.updateUser({ password: form.next })
       await new Promise(r => setTimeout(r, 1200));
       toast.success("Password changed successfully!");
       onClose?.();
     } catch (err) {
       toast.error(err?.message || "Failed to change password");
-    } finally {
-      setSaving(false);
-    }
+    } finally { setSaving(false); }
   };
-
   return (
-    <form className="edit-form change-pw-form" onSubmit={submit} noValidate>
+    <form className="edit-form" onSubmit={submit} noValidate>
       <div className="form-group">
         <label htmlFor="pw-current"><FaLock /> Current Password</label>
         <PasswordInput id="pw-current" name="current" value={form.current} onChange={handle}
           placeholder="Enter current password" disabled={saving} />
       </div>
-
       <div className="form-group">
         <label htmlFor="pw-next"><FaKey /> New Password</label>
         <PasswordInput id="pw-next" name="next" value={form.next} onChange={handle}
           placeholder="At least 8 characters" disabled={saving} />
         <PasswordStrength password={form.next} />
       </div>
-
       <div className="form-group">
         <label htmlFor="pw-confirm"><FaKey /> Confirm New Password</label>
         <PasswordInput id="pw-confirm" name="confirm" value={form.confirm} onChange={handle}
@@ -229,7 +192,6 @@ function ChangePasswordForm({ onClose }) {
           <p className="field-ok"><FaCheckCircle /> Passwords match</p>
         )}
       </div>
-
       <div className="edit-buttons">
         <button type="submit" className="save-btn" disabled={saving}>
           {saving ? <><span className="btn-spinner" /> Saving…</> : <><FaSave /> Change Password</>}
@@ -242,19 +204,93 @@ function ChangePasswordForm({ onClose }) {
   );
 }
 
+
+
+// ─── Cart Tab ─────────────────────────────────────────────────────────────────
+
+function CartTab() {
+  const navigate = useNavigate();
+  const {
+    cartItems, removeFromCart,
+    increaseQuantity, decreaseQuantity
+  } = useContext(CartContext);
+
+  const total = cartItems.reduce((sum, i) => sum + i.price * i.quantity, 0);
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="empty-state">
+        <FaShoppingCart className="empty-icon" />
+        <p>Your cart is empty.</p>
+        <button className="cta-btn" onClick={() => navigate("/shop")}>Start Shopping</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="cart-list">
+      {cartItems.map((item) => (
+        <div key={item.id} className="cart-item">
+          <img
+            src={item.thumbnail || item.image || "/placeholder.jpg"}
+            alt={item.title || item.name}
+            className="cart-item-img"
+            onClick={() => navigate(`/product/${item.id}`)}
+            onError={(e) => { e.target.src = "/placeholder.jpg"; }}
+          />
+
+          {/* بيانات */}
+          <div className="cart-item-info">
+            <p className="cart-item-name" onClick={() => navigate(`/product/${item.id}`)}>
+              {item.title || item.name}
+            </p>
+            <p className="cart-item-price">${Number(item.price).toFixed(2)}</p>
+          </div>
+
+          {/* Quantity */}
+          <div className="cart-qty">
+            <button onClick={() => decreaseQuantity(item.id)}><FaMinus /></button>
+            <span>{item.quantity}</span>
+            <button onClick={() => increaseQuantity(item.id)}><FaPlus /></button>
+          </div>
+
+          {/* Subtotal */}
+          <p className="cart-subtotal">${(item.price * item.quantity).toFixed(2)}</p>
+
+          {/* Remove */}
+          <button className="btn-remove-cart" onClick={() => removeFromCart(item.id)}>
+            <FaTrash />
+          </button>
+        </div>
+      ))}
+
+      {/* Total */}
+      <div className="cart-total-row">
+        <span>Total</span>
+        <span className="cart-total-price">${total.toFixed(2)}</span>
+      </div>
+
+      <button className="cta-btn" onClick={() => navigate("/cart")}>
+        Go to Checkout
+      </button>
+    </div>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 function UserProfile() {
   const navigate = useNavigate();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
   const { profile, loading: profileLoading, updateProfile, uploadAvatar } = useUserProfile();
-  const { orders, loading: ordersLoading } = useUserOrders();
-  const { wishlist, loading: wishlistLoading } = useUserWishlist();
 
-  const [isEditing, setIsEditing]   = useState(false);
-  const [isSaving, setIsSaving]     = useState(false);
-  const [editData, setEditData]     = useState({ full_name: "", phone: "" });
-  const [activeTab, setActiveTab]   = useState("info");
+  // ← بنجيب الأرقام من CartContext للـ badges
+  const { cartItems } = useContext(CartContext);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editData, setEditData] = useState({ full_name: "", phone: "" });
+  const [activeTab, setActiveTab] = useState("info");
   const [showPwForm, setShowPwForm] = useState(false);
 
   useEffect(() => {
@@ -265,7 +301,6 @@ function UserProfile() {
     if (!authLoading && !isAuthenticated) navigate("/login", { replace: true });
   }, [authLoading, isAuthenticated, navigate]);
 
-  // Close password form on tab switch
   useEffect(() => { setShowPwForm(false); }, [activeTab]);
 
   const handleEditChange = useCallback((e) => {
@@ -283,9 +318,7 @@ function UserProfile() {
       toast.success("Profile updated successfully!");
     } catch (err) {
       toast.error(err?.message || "Failed to update profile");
-    } finally {
-      setIsSaving(false);
-    }
+    } finally { setIsSaving(false); }
   };
 
   const handleCancelEdit = () => {
@@ -293,7 +326,6 @@ function UserProfile() {
     setIsEditing(false);
   };
 
-  // ── Loading / guard ───────────────────────────────────────────────────────
   if (authLoading || profileLoading) {
     return (
       <PageTransition>
@@ -309,10 +341,9 @@ function UserProfile() {
   if (!isAuthenticated) return null;
 
   const tabs = [
-    { id: "info",     label: "Profile",  icon: <FaUser />,        count: null },
-    { id: "orders",   label: "Orders",   icon: <FaShoppingBag />, count: orders?.length },
-    { id: "wishlist", label: "Wishlist", icon: <FaHeart />,       count: wishlist?.length },
-    { id: "security", label: "Security", icon: <FaShieldAlt />,   count: null },
+    { id: "info", label: "Profile", icon: <FaUser />, count: null },
+    { id: "cart", label: "Cart", icon: <FaShoppingCart />, count: cartItems.length },
+    { id: "security", label: "Security", icon: <FaShieldAlt />, count: null },
   ];
 
   return (
@@ -322,17 +353,10 @@ function UserProfile() {
 
           {/* ── Header ─────────────────────────────────────────────────── */}
           <header className="profile-header">
-            <Avatar
-              name={profile?.full_name}
-              src={profile?.avatar_url}
-              size={90}
-              onUpload={uploadAvatar}
-            />
+            <Avatar name={profile?.full_name} src={profile?.avatar_url} size={90} onUpload={uploadAvatar} />
             <div className="profile-title">
               <h1>{profile?.full_name || "Welcome!"}</h1>
-              <p className="profile-email">
-                <FaEnvelope className="inline-icon" /> {user?.email}
-              </p>
+              <p className="profile-email"><FaEnvelope className="inline-icon" /> {user?.email}</p>
               <p className="profile-since">
                 Member since {user?.created_at
                   ? new Date(user.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long" })
@@ -340,14 +364,11 @@ function UserProfile() {
               </p>
             </div>
 
+            {/* Stats من CartContext مباشرة */}
             <div className="header-stats">
-              <div className="stat-pill">
-                <span className="stat-num">{orders?.length ?? 0}</span>
-                <span className="stat-label">Orders</span>
-              </div>
-              <div className="stat-pill">
-                <span className="stat-num">{wishlist?.length ?? 0}</span>
-                <span className="stat-label">Wishlist</span>
+              <div className="stat-pill" onClick={() => setActiveTab("cart")} style={{ cursor: "pointer" }}>
+                <span className="stat-num">{cartItems.length}</span>
+                <span className="stat-label">Cart</span>
               </div>
             </div>
 
@@ -378,8 +399,7 @@ function UserProfile() {
             {activeTab === "info" && (
               <>
                 <SectionCard
-                  title="Personal Information"
-                  icon={<FaUser />}
+                  title="Personal Information" icon={<FaUser />}
                   action={
                     !isEditing && (
                       <button className="edit-btn" onClick={() => setIsEditing(true)}>
@@ -391,18 +411,14 @@ function UserProfile() {
                   {isEditing ? (
                     <div className="edit-form">
                       <div className="form-group">
-                        <label htmlFor="full_name">
-                          <FaUser /> Full Name <span className="required">*</span>
-                        </label>
+                        <label htmlFor="full_name"><FaUser /> Full Name <span className="required">*</span></label>
                         <input id="full_name" type="text" name="full_name" value={editData.full_name}
-                          onChange={handleEditChange} placeholder="Your full name"
-                          disabled={isSaving} autoFocus />
+                          onChange={handleEditChange} placeholder="Your full name" disabled={isSaving} autoFocus />
                       </div>
                       <div className="form-group">
                         <label htmlFor="phone"><FaPhone /> Phone Number</label>
                         <input id="phone" type="tel" name="phone" value={editData.phone}
-                          onChange={handleEditChange} placeholder="e.g. +20 100 000 0000"
-                          disabled={isSaving} />
+                          onChange={handleEditChange} placeholder="e.g. +20 100 000 0000" disabled={isSaving} />
                       </div>
                       <div className="edit-buttons">
                         <button className="save-btn" onClick={handleSaveProfile} disabled={isSaving}>
@@ -415,10 +431,9 @@ function UserProfile() {
                     </div>
                   ) : (
                     <div className="profile-info">
-                      <InfoRow icon={<FaUser />}     label="Full Name" value={profile?.full_name} />
-                      <InfoRow icon={<FaEnvelope />} label="Email"     value={user?.email} />
-                      <InfoRow icon={<FaPhone />}    label="Phone"     value={profile?.phone} />
-                
+                      <InfoRow icon={<FaUser />} label="Full Name" value={profile?.full_name} />
+                      <InfoRow icon={<FaEnvelope />} label="Email" value={user?.email} />
+                      <InfoRow icon={<FaPhone />} label="Phone" value={profile?.phone} />
                     </div>
                   )}
                 </SectionCard>
@@ -428,9 +443,7 @@ function UserProfile() {
                     <InfoRow
                       label="Member Since"
                       value={user?.created_at
-                        ? new Date(user.created_at).toLocaleDateString("en-US", {
-                            year: "numeric", month: "long", day: "numeric",
-                          })
+                        ? new Date(user.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })
                         : "Unknown"}
                     />
                     <div className="info-item">
@@ -446,82 +459,12 @@ function UserProfile() {
               </>
             )}
 
-            {/* ══ ORDERS TAB ═════════════════════════════════════════════ */}
-            {activeTab === "orders" && (
-              <SectionCard title="My Orders" icon={<FaShoppingBag />}>
-                {ordersLoading ? (
-                  <Skeleton rows={4} />
-                ) : orders?.length > 0 ? (
-                  <div className="orders-list">
-                    {orders.map((order) => (
-                      <div key={order.id} className="order-item">
-                        <div className="order-icon-wrap">
-                          {order.status?.toLowerCase() === "delivered"
-                            ? <FaBox className="order-icon delivered" />
-                            : <FaBoxOpen className="order-icon pending" />}
-                        </div>
-                        <div className="order-info">
-                          <p className="order-id">#{order.id.slice(0, 8).toUpperCase()}</p>
-                          <p className="order-date">
-                            {new Date(order.created_at).toLocaleDateString("en-US", {
-                              year: "numeric", month: "short", day: "numeric",
-                            })}
-                          </p>
-                          <StatusBadge status={order.status} />
-                        </div>
-                        <div className="order-price">
-                          <p className="total">${Number(order.total_price).toFixed(2)}</p>
-                          <FaChevronRight className="order-arrow" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="empty-state">
-                    <FaShoppingBag className="empty-icon" />
-                    <p>No orders yet.</p>
-                    <button className="cta-btn" onClick={() => navigate("/shop")}>Start Shopping</button>
-                  </div>
-                )}
-              </SectionCard>
-            )}
 
-            {/* ══ WISHLIST TAB ═══════════════════════════════════════════ */}
-            {activeTab === "wishlist" && (
-              <SectionCard title="My Wishlist" icon={<FaHeart />}>
-                {wishlistLoading ? (
-                  <Skeleton rows={4} />
-                ) : wishlist?.length > 0 ? (
-                  <div className="wishlist-grid">
-                    {wishlist.map((item) => (
-                      <div
-                        key={item.id} className="wishlist-item"
-                        role="button" tabIndex={0}
-                        onClick={() => navigate(`/product/${item.product_data?.id}`)}
-                        onKeyDown={(e) => e.key === "Enter" && navigate(`/product/${item.product_data?.id}`)}
-                      >
-                        <div className="wishlist-img-wrap">
-                          <img
-                            src={item.product_data?.image || "/placeholder.jpg"}
-                            alt={item.product_data?.name || "Product"}
-                            onError={(e) => { e.target.src = "/placeholder.jpg"; }}
-                            loading="lazy"
-                          />
-                        </div>
-                        <div className="wishlist-info">
-                          <p className="product-name">{item.product_data?.name || "Unnamed Product"}</p>
-                          <p className="product-price">${Number(item.product_data?.price || 0).toFixed(2)}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="empty-state">
-                    <FaHeart className="empty-icon" />
-                    <p>Your wishlist is empty.</p>
-                    <button className="cta-btn" onClick={() => navigate("/shop")}>Browse Products</button>
-                  </div>
-                )}
+
+            {/* ══ CART TAB — من CartContext ══════════════════════════════ */}
+            {activeTab === "cart" && (
+              <SectionCard title="My Cart" icon={<FaShoppingCart />}>
+                <CartTab />
               </SectionCard>
             )}
 
@@ -529,8 +472,7 @@ function UserProfile() {
             {activeTab === "security" && (
               <>
                 <SectionCard
-                  title="Change Password"
-                  icon={<FaLock />}
+                  title="Change Password" icon={<FaLock />}
                   action={
                     !showPwForm && (
                       <button className="edit-btn" onClick={() => setShowPwForm(true)}>

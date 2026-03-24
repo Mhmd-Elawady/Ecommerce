@@ -5,10 +5,6 @@ import { useAuth } from "./useAuth";
 
 // ─── Shared helpers ───────────────────────────────────────────────────────────
 
-/**
- * Generic Supabase fetch with abort-signal support.
- * Returns { data, error } — never throws.
- */
 const safeFetch = async (queryFn, signal) => {
   try {
     const result = await queryFn();
@@ -23,9 +19,9 @@ const safeFetch = async (queryFn, signal) => {
 
 export const useUserProfile = () => {
   const { user, isAuthenticated } = useAuth();
-  const [profile, setProfile]   = useState(null);
-  const [loading, setLoading]   = useState(false);
-  const [error, setError]       = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError]     = useState(null);
 
   useEffect(() => {
     if (!isAuthenticated || !user) {
@@ -39,27 +35,24 @@ export const useUserProfile = () => {
       setLoading(true);
       setError(null);
 
-      // Try to fetch existing profile
       const { data, error: fetchError, aborted } = await safeFetch(
         () =>
           supabase
             .from("user_profiles")
             .select("*")
-            .eq("user_id", user.id)
+            .eq("id", user.id)
             .single(),
         controller.signal
       );
 
       if (aborted) return;
 
-      // Profile found
       if (!fetchError) {
         setProfile(data);
         setLoading(false);
         return;
       }
 
-      // Profile doesn't exist yet → create it
       if (fetchError.code === "PGRST116") {
         const { data: newProfile, error: createError, aborted: createAborted } =
           await safeFetch(
@@ -68,10 +61,9 @@ export const useUserProfile = () => {
                 .from("user_profiles")
                 .insert([
                   {
-                    user_id:   user.id,
+                    id:        user.id,
                     full_name: user.user_metadata?.full_name || user.email,
                     phone:     user.user_metadata?.phone     || null,
-                    email:     user.email,
                   },
                 ])
                 .select()
@@ -98,10 +90,6 @@ export const useUserProfile = () => {
     return () => controller.abort();
   }, [user, isAuthenticated]);
 
-  /**
-   * Update profile fields. Returns true on success, false on failure.
-   * Caller is responsible for showing success/error UI (no toast here).
-   */
   const updateProfile = useCallback(
     async (updates) => {
       if (!user) return false;
@@ -111,7 +99,7 @@ export const useUserProfile = () => {
         supabase
           .from("user_profiles")
           .update(updates)
-          .eq("user_id", user.id)
+          .eq("id", user.id)
       );
 
       setLoading(false);
@@ -119,10 +107,9 @@ export const useUserProfile = () => {
       if (updateError) {
         setError(updateError.message);
         console.error("Error updating profile:", updateError);
-        throw updateError; // let the caller handle UX
+        throw updateError;
       }
 
-      // Optimistic local update
       setProfile((prev) => ({ ...prev, ...updates }));
       return true;
     },
@@ -175,7 +162,6 @@ export const useUserWishlist = () => {
     return () => controller.abort();
   }, [user, isAuthenticated]);
 
-  // Track in-flight product IDs to prevent double-clicks
   const pendingRef = useRef(new Set());
 
   const isInWishlist = useCallback(
@@ -186,12 +172,11 @@ export const useUserWishlist = () => {
   const addToWishlist = useCallback(
     async (productId, productData) => {
       if (!user) { toast.error("Please login first!"); return; }
-      if (isInWishlist(productId))  { toast("Already in wishlist"); return; }
+      if (isInWishlist(productId)) { toast("Already in wishlist"); return; }
       if (pendingRef.current.has(productId)) return;
 
       pendingRef.current.add(productId);
 
-     
       const optimistic = { user_id: user.id, product_id: productId, product_data: productData };
       setWishlist((prev) => [...prev, optimistic]);
 
@@ -202,7 +187,6 @@ export const useUserWishlist = () => {
       pendingRef.current.delete(productId);
 
       if (insertError) {
-        // Roll back
         setWishlist((prev) => prev.filter((i) => i.product_id !== productId));
         console.error("Error adding to wishlist:", insertError);
         toast.error("Failed to add to wishlist");
@@ -220,7 +204,6 @@ export const useUserWishlist = () => {
 
       pendingRef.current.add(productId);
 
-      // Optimistic update
       const previous = wishlist.find((i) => i.product_id === productId);
       setWishlist((prev) => prev.filter((i) => i.product_id !== productId));
 
@@ -235,7 +218,6 @@ export const useUserWishlist = () => {
       pendingRef.current.delete(productId);
 
       if (deleteError) {
-        // Roll back
         if (previous) setWishlist((prev) => [...prev, previous]);
         console.error("Error removing from wishlist:", deleteError);
         toast.error("Failed to remove from wishlist");
@@ -261,7 +243,7 @@ export const useUserWishlist = () => {
     isInWishlist,
     addToWishlist,
     removeFromWishlist,
-    toggleWishlist,     // convenience helper
+    toggleWishlist,
   };
 };
 
