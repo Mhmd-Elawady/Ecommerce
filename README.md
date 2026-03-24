@@ -148,7 +148,7 @@ Resolved CSS conflicts with React Slick to correctly display a single card per s
 >
 > | Home Page | Product Details | User Profile |
 > | --------- | --------------- | ------------ |
-> | ![Home](public/Screenshot%202026-03-24%20180828.png) | ![Product](public/Screenshot%202026-03-24%20181006.png) | ![Profile](public/Screenshot%202026-03-24%20181025.png) |
+> | ![Home](src/image/Screenshot%202026-03-24%20180828.png) | ![Product](src/image/Screenshot%202026-03-24%20181006.png) | ![Profile](src/image/Screenshot%202026-03-24%20181025.png) |
 
 ---
 
