@@ -303,24 +303,7 @@ function Register() {
 
             </form>
 
-            {/* Social Register */}
-            <div className="social-register">
-              <p className="divider">
-                <span>Or sign up with</span>
-              </p>
-              <div className="social-buttons">
-                <button
-                  type="button"
-                  className="social-btn google"
-                  onClick={() => handleSocialLogin("google")}
-                  disabled={loading}
-                >
-                  <FaGoogle />
-                  <span>Google</span>
-                </button>
-              </div>
-            </div>
-
+    
             {/* Login Link */}
             <div className="login-link">
               <p>

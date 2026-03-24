@@ -173,24 +173,7 @@ function Login() {
 
             </form>
 
-            {/* Social Login */}
-            <div className="social-login">
-              <p className="divider">
-                <span>Or continue with</span>
-              </p>
-              <div className="social-buttons">
-                <button
-                  className="social-btn google"
-                  type="button"
-                  onClick={() => handleSocialLogin("google")}
-                  disabled={loading}
-                >
-                  <FaGoogle />
-                  <span>Google</span>
-                </button>
-              </div>
-            </div>
-
+        
             {/* Sign Up Link */}
             <div className="signup-link">
               <p>

@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   FaUser, FaEnvelope, FaPhone, FaEdit, FaSave,
   FaTimes, FaShoppingBag, FaHeart, FaShieldAlt,
-  FaCheckCircle, FaTimesCircle, FaBoxOpen, FaBox
+  FaCheckCircle, FaTimesCircle, FaBoxOpen, FaBox,
+  FaCamera, FaLock, FaEye, FaEyeSlash, FaKey,
+  FaChevronRight
 } from "react-icons/fa";
 import PageTransition from "../../components/PageTransition";
 import Footer from "../../components/Footer/Footer";
@@ -13,30 +15,76 @@ import { useUserProfile, useUserOrders, useUserWishlist } from "../../hooks/useU
 import "./UserProfile.css";
 import toast from "react-hot-toast";
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
-function Avatar({ name, size = 80 }) {
-  const initials = name
-    ? name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
-    : "?";
+const getInitials = (name) =>
+  name ? name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase() : "?";
+
+// ─── Avatar with upload ───────────────────────────────────────────────────────
+
+function Avatar({ name, src, size = 80, onUpload }) {
+  const fileRef = useRef();
+  const [preview, setPreview] = useState(src || null);
+  const [uploading, setUploading] = useState(false);
+
+  const handleFile = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) { toast.error("Please select an image file"); return; }
+    if (file.size > 5 * 1024 * 1024) { toast.error("Image must be under 5 MB"); return; }
+
+    setPreview(URL.createObjectURL(file));
+
+    if (onUpload) {
+      setUploading(true);
+      try {
+        await onUpload(file);
+        toast.success("Profile photo updated!");
+      } catch {
+        toast.error("Failed to upload photo");
+        setPreview(src || null);
+      } finally {
+        setUploading(false);
+      }
+    }
+  };
+
   return (
-    <div className="profile-avatar" style={{ width: size, height: size }}>
-      {name ? <span className="avatar-initials">{initials}</span> : <FaUser />}
+    <div
+      className={`profile-avatar${onUpload ? " clickable" : ""}${uploading ? " uploading" : ""}`}
+      style={{ width: size, height: size }}
+      onClick={() => onUpload && fileRef.current?.click()}
+      title={onUpload ? "Change profile photo" : undefined}
+    >
+      {preview
+        ? <img src={preview} alt={name || "avatar"} className="avatar-img" />
+        : <span className="avatar-initials">{getInitials(name)}</span>
+      }
+      {onUpload && (
+        <div className="avatar-overlay">
+          {uploading ? <span className="avatar-spinner" /> : <FaCamera className="avatar-camera-icon" />}
+        </div>
+      )}
+      {onUpload && <input ref={fileRef} type="file" accept="image/*" hidden onChange={handleFile} />}
     </div>
   );
 }
 
+// ─── Status Badge ─────────────────────────────────────────────────────────────
+
 function StatusBadge({ status }) {
   const map = {
-    delivered:  { color: "green",  label: "Delivered"  },
-    pending:    { color: "yellow", label: "Pending"    },
-    cancelled:  { color: "red",    label: "Cancelled"  },
-    processing: { color: "blue",   label: "Processing" },
-    shipped:    { color: "purple", label: "Shipped"    },
+    delivered:  { cls: "green",  label: "Delivered"  },
+    pending:    { cls: "yellow", label: "Pending"    },
+    cancelled:  { cls: "red",    label: "Cancelled"  },
+    processing: { cls: "blue",   label: "Processing" },
+    shipped:    { cls: "purple", label: "Shipped"    },
   };
-  const { color = "gray", label = status } = map[status?.toLowerCase()] ?? {};
-  return <span className={`status-badge status-${color}`}>{label}</span>;
+  const { cls = "gray", label = status } = map[status?.toLowerCase()] ?? {};
+  return <span className={`status-badge status-${cls}`}>{label}</span>;
 }
+
+// ─── Info Row ─────────────────────────────────────────────────────────────────
 
 function InfoRow({ icon, label, value, mono = false }) {
   return (
@@ -49,6 +97,8 @@ function InfoRow({ icon, label, value, mono = false }) {
     </div>
   );
 }
+
+// ─── Section Card ─────────────────────────────────────────────────────────────
 
 function SectionCard({ title, icon, children, action }) {
   return (
@@ -65,6 +115,8 @@ function SectionCard({ title, icon, children, action }) {
   );
 }
 
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
+
 function Skeleton({ rows = 3 }) {
   return (
     <div className="skeleton-wrapper">
@@ -75,58 +127,162 @@ function Skeleton({ rows = 3 }) {
   );
 }
 
+// ─── Password Input ───────────────────────────────────────────────────────────
+
+function PasswordInput({ id, name, value, onChange, placeholder, disabled }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="password-input-wrap">
+      <input
+        id={id} type={show ? "text" : "password"} name={name}
+        value={value} onChange={onChange} placeholder={placeholder}
+        disabled={disabled} autoComplete="new-password"
+      />
+      <button type="button" className="toggle-pw" onClick={() => setShow(s => !s)} tabIndex={-1}>
+        {show ? <FaEyeSlash /> : <FaEye />}
+      </button>
+    </div>
+  );
+}
+
+// ─── Password Strength ────────────────────────────────────────────────────────
+
+function PasswordStrength({ password }) {
+  const score = [
+    password.length >= 8,
+    /[A-Z]/.test(password),
+    /[0-9]/.test(password),
+    /[^A-Za-z0-9]/.test(password),
+  ].filter(Boolean).length;
+
+  const colors = ["", "#ef4444", "#f59e0b", "#3b82f6", "#22c55e"];
+  const labels = ["", "Weak", "Fair", "Good", "Strong"];
+  if (!password) return null;
+
+  return (
+    <div className="pw-strength">
+      <div className="pw-bars">
+        {[1, 2, 3, 4].map(n => (
+          <div key={n} className="pw-bar"
+            style={{ background: n <= score ? colors[score] : "rgba(255,255,255,0.1)" }} />
+        ))}
+      </div>
+      <span className="pw-label" style={{ color: colors[score] }}>{labels[score]}</span>
+    </div>
+  );
+}
+
+// ─── Change Password Form ─────────────────────────────────────────────────────
+
+function ChangePasswordForm({ onClose }) {
+  const [form, setForm] = useState({ current: "", next: "", confirm: "" });
+  const [saving, setSaving] = useState(false);
+
+  const handle = useCallback((e) => {
+    const { name, value } = e.target;
+    setForm(f => ({ ...f, [name]: value }));
+  }, []);
+
+  const submit = async (e) => {
+    e.preventDefault();
+    if (!form.current)          { toast.error("Enter your current password"); return; }
+    if (form.next.length < 8)   { toast.error("New password must be at least 8 characters"); return; }
+    if (form.next !== form.confirm) { toast.error("Passwords do not match"); return; }
+
+    setSaving(true);
+    try {
+      // 🔌 Replace with your real API call:
+      // await supabase.auth.updateUser({ password: form.next })
+      await new Promise(r => setTimeout(r, 1200));
+      toast.success("Password changed successfully!");
+      onClose?.();
+    } catch (err) {
+      toast.error(err?.message || "Failed to change password");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <form className="edit-form change-pw-form" onSubmit={submit} noValidate>
+      <div className="form-group">
+        <label htmlFor="pw-current"><FaLock /> Current Password</label>
+        <PasswordInput id="pw-current" name="current" value={form.current} onChange={handle}
+          placeholder="Enter current password" disabled={saving} />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="pw-next"><FaKey /> New Password</label>
+        <PasswordInput id="pw-next" name="next" value={form.next} onChange={handle}
+          placeholder="At least 8 characters" disabled={saving} />
+        <PasswordStrength password={form.next} />
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="pw-confirm"><FaKey /> Confirm New Password</label>
+        <PasswordInput id="pw-confirm" name="confirm" value={form.confirm} onChange={handle}
+          placeholder="Repeat new password" disabled={saving} />
+        {form.confirm && form.next !== form.confirm && (
+          <p className="field-error"><FaTimesCircle /> Passwords do not match</p>
+        )}
+        {form.confirm && form.next === form.confirm && form.confirm.length > 0 && (
+          <p className="field-ok"><FaCheckCircle /> Passwords match</p>
+        )}
+      </div>
+
+      <div className="edit-buttons">
+        <button type="submit" className="save-btn" disabled={saving}>
+          {saving ? <><span className="btn-spinner" /> Saving…</> : <><FaSave /> Change Password</>}
+        </button>
+        <button type="button" className="cancel-btn" onClick={onClose} disabled={saving}>
+          <FaTimes /> Cancel
+        </button>
+      </div>
+    </form>
+  );
+}
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 function UserProfile() {
   const navigate = useNavigate();
   const { user, isAuthenticated, loading: authLoading } = useAuth();
-  const { profile, loading: profileLoading, updateProfile } = useUserProfile();
+  const { profile, loading: profileLoading, updateProfile, uploadAvatar } = useUserProfile();
   const { orders, loading: ordersLoading } = useUserOrders();
   const { wishlist, loading: wishlistLoading } = useUserWishlist();
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [editData, setEditData] = useState({ full_name: "", phone: "" });
-  const [activeTab, setActiveTab] = useState("info"); // "info" | "orders" | "wishlist"
+  const [isEditing, setIsEditing]   = useState(false);
+  const [isSaving, setIsSaving]     = useState(false);
+  const [editData, setEditData]     = useState({ full_name: "", phone: "" });
+  const [activeTab, setActiveTab]   = useState("info");
+  const [showPwForm, setShowPwForm] = useState(false);
 
-  // Sync editData whenever profile changes
   useEffect(() => {
-    if (profile) {
-      setEditData({ full_name: profile.full_name || "", phone: profile.phone || "" });
-    }
+    if (profile) setEditData({ full_name: profile.full_name || "", phone: profile.phone || "" });
   }, [profile]);
 
-  // Auth guard
   useEffect(() => {
-    if (!authLoading && !isAuthenticated) {
-      navigate("/login", { replace: true });
-    }
+    if (!authLoading && !isAuthenticated) navigate("/login", { replace: true });
   }, [authLoading, isAuthenticated, navigate]);
+
+  // Close password form on tab switch
+  useEffect(() => { setShowPwForm(false); }, [activeTab]);
 
   const handleEditChange = useCallback((e) => {
     const { name, value } = e.target;
-    setEditData((prev) => ({ ...prev, [name]: value }));
+    setEditData(p => ({ ...p, [name]: value }));
   }, []);
 
   const handleSaveProfile = async () => {
-    const trimmed = {
-      full_name: editData.full_name.trim(),
-      phone: editData.phone.trim(),
-    };
-
-    if (!trimmed.full_name) {
-      toast.error("Full name is required");
-      return;
-    }
-
+    const trimmed = { full_name: editData.full_name.trim(), phone: editData.phone.trim() };
+    if (!trimmed.full_name) { toast.error("Full name is required"); return; }
     setIsSaving(true);
     try {
       await updateProfile(trimmed);
       setIsEditing(false);
       toast.success("Profile updated successfully!");
-    } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error(error?.message || "Failed to update profile. Please try again.");
+    } catch (err) {
+      toast.error(err?.message || "Failed to update profile");
     } finally {
       setIsSaving(false);
     }
@@ -137,7 +293,7 @@ function UserProfile() {
     setIsEditing(false);
   };
 
-  // ── Loading state ────────────────────────────────────────────────────────────
+  // ── Loading / guard ───────────────────────────────────────────────────────
   if (authLoading || profileLoading) {
     return (
       <PageTransition>
@@ -150,14 +306,13 @@ function UserProfile() {
       </PageTransition>
     );
   }
-
-  // Auth guard (render-level fallback)
   if (!isAuthenticated) return null;
 
   const tabs = [
-    { id: "info",     label: "Profile",   icon: <FaUser />,        count: null },
-    { id: "orders",   label: "Orders",    icon: <FaShoppingBag />, count: orders?.length },
-    { id: "wishlist", label: "Wishlist",  icon: <FaHeart />,       count: wishlist?.length },
+    { id: "info",     label: "Profile",  icon: <FaUser />,        count: null },
+    { id: "orders",   label: "Orders",   icon: <FaShoppingBag />, count: orders?.length },
+    { id: "wishlist", label: "Wishlist", icon: <FaHeart />,       count: wishlist?.length },
+    { id: "security", label: "Security", icon: <FaShieldAlt />,   count: null },
   ];
 
   return (
@@ -165,19 +320,41 @@ function UserProfile() {
       <div className="user-profile-page">
         <div className="profile-container">
 
-          {/* ── Header ─────────────────────────────────────────────────────── */}
+          {/* ── Header ─────────────────────────────────────────────────── */}
           <header className="profile-header">
-            <Avatar name={profile?.full_name} size={80} />
+            <Avatar
+              name={profile?.full_name}
+              src={profile?.avatar_url}
+              size={90}
+              onUpload={uploadAvatar}
+            />
             <div className="profile-title">
               <h1>{profile?.full_name || "Welcome!"}</h1>
               <p className="profile-email">
                 <FaEnvelope className="inline-icon" /> {user?.email}
               </p>
+              <p className="profile-since">
+                Member since {user?.created_at
+                  ? new Date(user.created_at).toLocaleDateString("en-US", { year: "numeric", month: "long" })
+                  : "—"}
+              </p>
             </div>
+
+            <div className="header-stats">
+              <div className="stat-pill">
+                <span className="stat-num">{orders?.length ?? 0}</span>
+                <span className="stat-label">Orders</span>
+              </div>
+              <div className="stat-pill">
+                <span className="stat-num">{wishlist?.length ?? 0}</span>
+                <span className="stat-label">Wishlist</span>
+              </div>
+            </div>
+
             <LogoutButton className="profile-logout-btn" />
           </header>
 
-          {/* ── Tab navigation ──────────────────────────────────────────────── */}
+          {/* ── Tabs ───────────────────────────────────────────────────── */}
           <nav className="profile-tabs" aria-label="Profile sections">
             {tabs.map((tab) => (
               <button
@@ -197,7 +374,7 @@ function UserProfile() {
 
           <div className="profile-content">
 
-            {/* ── Personal Information ─────────────────────────────────────── */}
+            {/* ══ PROFILE TAB ════════════════════════════════════════════ */}
             {activeTab === "info" && (
               <>
                 <SectionCard
@@ -205,11 +382,7 @@ function UserProfile() {
                   icon={<FaUser />}
                   action={
                     !isEditing && (
-                      <button
-                        className="edit-btn"
-                        onClick={() => setIsEditing(true)}
-                        aria-label="Edit profile"
-                      >
+                      <button className="edit-btn" onClick={() => setIsEditing(true)}>
                         <FaEdit /> Edit
                       </button>
                     )
@@ -221,65 +394,35 @@ function UserProfile() {
                         <label htmlFor="full_name">
                           <FaUser /> Full Name <span className="required">*</span>
                         </label>
-                        <input
-                          id="full_name"
-                          type="text"
-                          name="full_name"
-                          value={editData.full_name}
-                          onChange={handleEditChange}
-                          placeholder="Your full name"
-                          disabled={isSaving}
-                          autoFocus
-                        />
+                        <input id="full_name" type="text" name="full_name" value={editData.full_name}
+                          onChange={handleEditChange} placeholder="Your full name"
+                          disabled={isSaving} autoFocus />
                       </div>
-
                       <div className="form-group">
-                        <label htmlFor="phone">
-                          <FaPhone /> Phone Number
-                        </label>
-                        <input
-                          id="phone"
-                          type="tel"
-                          name="phone"
-                          value={editData.phone}
-                          onChange={handleEditChange}
-                          placeholder="e.g. +20 100 000 0000"
-                          disabled={isSaving}
-                        />
+                        <label htmlFor="phone"><FaPhone /> Phone Number</label>
+                        <input id="phone" type="tel" name="phone" value={editData.phone}
+                          onChange={handleEditChange} placeholder="e.g. +20 100 000 0000"
+                          disabled={isSaving} />
                       </div>
-
                       <div className="edit-buttons">
-                        <button
-                          className="save-btn"
-                          onClick={handleSaveProfile}
-                          disabled={isSaving}
-                        >
-                          {isSaving ? (
-                            <><span className="btn-spinner" /> Saving…</>
-                          ) : (
-                            <><FaSave /> Save Changes</>
-                          )}
+                        <button className="save-btn" onClick={handleSaveProfile} disabled={isSaving}>
+                          {isSaving ? <><span className="btn-spinner" /> Saving…</> : <><FaSave /> Save Changes</>}
                         </button>
-                        <button
-                          className="cancel-btn"
-                          onClick={handleCancelEdit}
-                          disabled={isSaving}
-                        >
+                        <button className="cancel-btn" onClick={handleCancelEdit} disabled={isSaving}>
                           <FaTimes /> Cancel
                         </button>
                       </div>
                     </div>
                   ) : (
                     <div className="profile-info">
-                      <InfoRow icon={<FaUser />}    label="Full Name" value={profile?.full_name} />
+                      <InfoRow icon={<FaUser />}     label="Full Name" value={profile?.full_name} />
                       <InfoRow icon={<FaEnvelope />} label="Email"     value={user?.email} />
-                      <InfoRow icon={<FaPhone />}   label="Phone"     value={profile?.phone} />
-                      <InfoRow label="User ID" value={user?.id} mono />
+                      <InfoRow icon={<FaPhone />}    label="Phone"     value={profile?.phone} />
+                
                     </div>
                   )}
                 </SectionCard>
 
-                {/* Account info */}
                 <SectionCard title="Account Information" icon={<FaShieldAlt />}>
                   <div className="profile-info">
                     <InfoRow
@@ -303,7 +446,7 @@ function UserProfile() {
               </>
             )}
 
-            {/* ── Orders ───────────────────────────────────────────────────── */}
+            {/* ══ ORDERS TAB ═════════════════════════════════════════════ */}
             {activeTab === "orders" && (
               <SectionCard title="My Orders" icon={<FaShoppingBag />}>
                 {ordersLoading ? (
@@ -328,6 +471,7 @@ function UserProfile() {
                         </div>
                         <div className="order-price">
                           <p className="total">${Number(order.total_price).toFixed(2)}</p>
+                          <FaChevronRight className="order-arrow" />
                         </div>
                       </div>
                     ))}
@@ -336,15 +480,13 @@ function UserProfile() {
                   <div className="empty-state">
                     <FaShoppingBag className="empty-icon" />
                     <p>No orders yet.</p>
-                    <button className="cta-btn" onClick={() => navigate("/shop")}>
-                      Start Shopping
-                    </button>
+                    <button className="cta-btn" onClick={() => navigate("/shop")}>Start Shopping</button>
                   </div>
                 )}
               </SectionCard>
             )}
 
-            {/* ── Wishlist ──────────────────────────────────────────────────── */}
+            {/* ══ WISHLIST TAB ═══════════════════════════════════════════ */}
             {activeTab === "wishlist" && (
               <SectionCard title="My Wishlist" icon={<FaHeart />}>
                 {wishlistLoading ? (
@@ -353,13 +495,10 @@ function UserProfile() {
                   <div className="wishlist-grid">
                     {wishlist.map((item) => (
                       <div
-                        key={item.id}
-                        className="wishlist-item"
-                        role="button"
-                        tabIndex={0}
+                        key={item.id} className="wishlist-item"
+                        role="button" tabIndex={0}
                         onClick={() => navigate(`/product/${item.product_data?.id}`)}
                         onKeyDown={(e) => e.key === "Enter" && navigate(`/product/${item.product_data?.id}`)}
-                        aria-label={`View ${item.product_data?.name}`}
                       >
                         <div className="wishlist-img-wrap">
                           <img
@@ -370,12 +509,8 @@ function UserProfile() {
                           />
                         </div>
                         <div className="wishlist-info">
-                          <p className="product-name">
-                            {item.product_data?.name || "Unnamed Product"}
-                          </p>
-                          <p className="product-price">
-                            ${Number(item.product_data?.price || 0).toFixed(2)}
-                          </p>
+                          <p className="product-name">{item.product_data?.name || "Unnamed Product"}</p>
+                          <p className="product-price">${Number(item.product_data?.price || 0).toFixed(2)}</p>
                         </div>
                       </div>
                     ))}
@@ -384,13 +519,65 @@ function UserProfile() {
                   <div className="empty-state">
                     <FaHeart className="empty-icon" />
                     <p>Your wishlist is empty.</p>
-                    <button className="cta-btn" onClick={() => navigate("/shop")}>
-                      Browse Products
-                    </button>
+                    <button className="cta-btn" onClick={() => navigate("/shop")}>Browse Products</button>
                   </div>
                 )}
               </SectionCard>
             )}
+
+            {/* ══ SECURITY TAB ═══════════════════════════════════════════ */}
+            {activeTab === "security" && (
+              <>
+                <SectionCard
+                  title="Change Password"
+                  icon={<FaLock />}
+                  action={
+                    !showPwForm && (
+                      <button className="edit-btn" onClick={() => setShowPwForm(true)}>
+                        <FaEdit /> Change
+                      </button>
+                    )
+                  }
+                >
+                  {showPwForm ? (
+                    <ChangePasswordForm onClose={() => setShowPwForm(false)} />
+                  ) : (
+                    <div className="security-info">
+                      <div className="security-row">
+                        <div className="security-icon-wrap"><FaKey /></div>
+                        <div>
+                          <p className="security-label">Password</p>
+                          <p className="security-value">••••••••••••</p>
+                        </div>
+                      </div>
+                      <p className="security-hint">
+                        Use a strong password with a mix of letters, numbers, and symbols.
+                      </p>
+                    </div>
+                  )}
+                </SectionCard>
+
+                <SectionCard title="Session Information" icon={<FaShieldAlt />}>
+                  <div className="profile-info">
+                    <div className="info-item">
+                      <span className="info-label">Email Verified</span>
+                      <span className="info-value">
+                        {user?.email_confirmed_at
+                          ? <><FaCheckCircle className="icon-green" /> Verified</>
+                          : <><FaTimesCircle className="icon-red" /> Not verified</>}
+                      </span>
+                    </div>
+                    <InfoRow
+                      label="Last Sign In"
+                      value={user?.last_sign_in_at
+                        ? new Date(user.last_sign_in_at).toLocaleString("en-US")
+                        : "Unknown"}
+                    />
+                  </div>
+                </SectionCard>
+              </>
+            )}
+
           </div>
         </div>
         <Footer />

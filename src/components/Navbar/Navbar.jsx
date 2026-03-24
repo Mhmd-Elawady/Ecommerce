@@ -15,7 +15,7 @@ function Navbar() {
   const { cartItems, favorites } = useContext(CartContext);
 
   // Assume user is not logged in for demo
-  const isLoggedIn = false;
+  const isLoggedIn = true;
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -67,15 +67,13 @@ function Navbar() {
     setSearchQuery("");
     setSearchResults([]);
   };
-
-  // Handle profile icon click
-  const handleProfileClick = () => {
-    if (isLoggedIn) {
-      navigate("/profile");
-    } else {
-      navigate("/login");
-    }
-  };
+const handleProfileClick = () => {
+  if (isLoggedIn) {
+    navigate("/profile");  // ← هتروح هنا لما isLoggedIn = true
+  } else {
+    navigate("/login");
+  }
+};
 
   const navLinks = [
     { path: "/", label: "Home" },

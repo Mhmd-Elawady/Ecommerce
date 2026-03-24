@@ -81,6 +81,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="UserProfile" element={<UserProfile />} />
         </Routes>
       </AnimatePresence>
     </>
