@@ -90,7 +90,7 @@ src/
 
 ```bash
 # Clone the repository
-git clone https://github.com/<your-username>/Ecommerce.git
+git clone https://mhmd-elawady.github.io/Ecommerce
 cd Ecommerce
 
 # Install dependencies
@@ -100,7 +100,7 @@ npm install
 npm run dev
 ```
 
-The app will be available at **http://localhost:5173**.
+The app will be available at **https://mhmd-elawady.github.io/Ecommerce**.
 
 ### Environment Variables
 
@@ -148,13 +148,11 @@ Resolved CSS conflicts with React Slick to correctly display a single card per s
 >
 > | Home Page | Product Details | User Profile |
 > | --------- | --------------- | ------------ |
-> | ![Home](screenshots/home.png) | ![Product](screenshots/product.png) | ![Profile](screenshots/profile.png) |
+> | ![Home](public/Screenshot%202026-03-24%20180828.png) | ![Product](public/Screenshot%202026-03-24%20181006.png) | ![Profile](public/Screenshot%202026-03-24%20181025.png) |
 
 ---
 
 ## 🔮 Future Improvements
-
-- [ ] Payment gateway integration (Stripe / PayPal)
 - [ ] Order history and tracking
 - [ ] Admin dashboard for product management
 - [ ] Product reviews and ratings
