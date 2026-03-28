@@ -1,59 +1,60 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import { FaLock, FaEye, FaEyeSlash, FaCheckCircle } from "react-icons/fa";
 import PageTransition from "../../components/PageTransition";
 import Footer from "../../components/Footer/Footer";
 import { supabase } from "../../supabaseClient";
 import "./Login.css";
 
+const validationSchema = Yup.object({
+  password: Yup.string()
+    .required("Password is required")
+    .min(6, "Password must be at least 6 characters")
+    .max(64, "Password must not exceed 64 characters"),
+
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords do not match")
+    .required("Please confirm your password"),
+});
+
 function ResetPassword() {
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [apiError, setApiError] = useState("");
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+  const formik = useFormik({
+    initialValues: {
+      password: "",
+      confirmPassword: "",
+    },
+    validationSchema,
+    onSubmit: async (values) => {
+      setApiError("");
+      setLoading(true);
 
-    if (!password || !confirmPassword) {
-      setError("Please enter both passwords.");
-      return;
-    }
+      try {
+        const { error: updateError } = await supabase.auth.updateUser({
+          password: values.password,
+        });
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long.");
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const { error: updateError } = await supabase.auth.updateUser({
-        password: password,
-      });
-
-      if (updateError) {
-        setError(updateError.message);
-      } else {
-        setSuccess(true);
-        setTimeout(() => navigate("/login"), 3000);
+        if (updateError) {
+          setApiError(updateError.message);
+        } else {
+          setSuccess(true);
+          setTimeout(() => navigate("/login"), 3000);
+        }
+      } catch (err) {
+        setApiError("Something went wrong. Please try again.");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+  });
 
   if (success) {
     return (
@@ -68,7 +69,6 @@ function ResetPassword() {
               </div>
             </div>
           </div>
-        
         </div>
       </PageTransition>
     );
@@ -88,15 +88,15 @@ function ResetPassword() {
               <p>Enter your new password below</p>
             </div>
 
-            {/* Error Message */}
-            {error && (
+            {/* API Error Message */}
+            {apiError && (
               <div className="login-error">
-                <span>{error}</span>
+                <span>{apiError}</span>
               </div>
             )}
 
             {/* Reset Password Form */}
-            <form onSubmit={handleSubmit} className="login-form">
+            <form onSubmit={formik.handleSubmit} className="login-form">
               {/* New Password */}
               <div className="form-group">
                 <label htmlFor="password">
@@ -107,10 +107,12 @@ function ResetPassword() {
                   <input
                     type={showPassword ? "text" : "password"}
                     id="password"
+                    name="password"
                     placeholder="Enter new password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
+                    value={formik.values.password}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className={formik.touched.password && formik.errors.password ? "input-error" : ""}
                   />
                   <button
                     type="button"
@@ -120,6 +122,11 @@ function ResetPassword() {
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
+                {formik.touched.password && formik.errors.password ? (
+                  <p className="field-error">{formik.errors.password}</p>
+                ) : (
+                  <p className="password-hint">Between 6 and 64 characters</p>
+                )}
               </div>
 
               {/* Confirm Password */}
@@ -132,10 +139,12 @@ function ResetPassword() {
                   <input
                     type={showConfirmPassword ? "text" : "password"}
                     id="confirmPassword"
+                    name="confirmPassword"
                     placeholder="Confirm new password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required
+                    value={formik.values.confirmPassword}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className={formik.touched.confirmPassword && formik.errors.confirmPassword ? "input-error" : ""}
                   />
                   <button
                     type="button"
@@ -145,6 +154,9 @@ function ResetPassword() {
                     {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
+                {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+                  <p className="field-error">{formik.errors.confirmPassword}</p>
+                )}
               </div>
 
               <button type="submit" className="login-button" disabled={loading}>
@@ -153,7 +165,7 @@ function ResetPassword() {
             </form>
           </div>
         </div>
-   
+
       </div>
     </PageTransition>
   );

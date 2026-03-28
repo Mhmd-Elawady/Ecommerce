@@ -1,12 +1,13 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import {
   FaUser,
   FaEnvelope,
   FaLock,
   FaEye,
   FaEyeSlash,
-  FaGoogle,
   FaPhone,
   FaCheckCircle,
 } from "react-icons/fa";
@@ -15,21 +16,67 @@ import { supabase } from "../../supabaseClient";
 import { useAuth } from "../../hooks/useAuth";
 import "./Register.css";
 
-const INITIAL_FORM = {
-  name: "",
-  email: "",
-  password: "",
-  confirmPassword: "",
-  phone: "",
-};
+const blockedDomains = [
+  "mailinator.com", "tempmail.com", "guerrillamail.com", "10minutemail.com",
+  "throwam.com", "yopmail.com", "trashmail.com", "fakeinbox.com",
+  "sharklasers.com", "guerrillamailblock.com", "grr.la", "guerrillamail.info",
+  "spam4.me", "dispostable.com", "mailnull.com", "spamgourmet.com",
+];
+
+const validationSchema = Yup.object({
+  name: Yup.string()
+    .min(3, "Name must be at least 3 characters")
+    .required("Name is required"),
+
+  email: Yup.string()
+    .required("Email is required")
+    .min(6, "Email must be at least 6 characters") 
+    .max(50, "Email must not exceed 50 characters")
+    .test("no-spaces", "Email must not contain spaces", (value) => {
+      return value ? !/\s/.test(value) : true;
+    })
+    .test("valid-tld", "Email must have a valid domain extension (.com, .net, etc.)", (value) => {
+      if (!value) return true;
+      const tldRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+      return tldRegex.test(value);
+    })
+    .test("no-special-chars", "Email contains invalid characters", (value) => {
+      if (!value) return true;
+      const validEmailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+      return validEmailRegex.test(value);
+    })
+    .test("no-blocked-domain", "This email domain is not allowed", (value) => {
+      if (!value) return true;
+      const domain = value.split("@")[1]?.toLowerCase();
+      return !blockedDomains.includes(domain);
+    })
+    .email("Please enter a valid email address"),
+
+  phone: Yup.string().matches(
+    /^01[0125][0-9]{8}$/,
+    "Please enter a valid Egyptian phone number"
+  ),
+
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .max(64, "Password must not exceed 64 characters")
+    .required("Password is required"),
+
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords do not match")
+    .required("Please confirm your password"),
+
+  terms: Yup.boolean().oneOf(
+    [true],
+    "You must agree to the Terms & Conditions"
+  ),
+});
 
 function Register() {
-  const [formData, setFormData] = useState(INITIAL_FORM);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [agreeTerms, setAgreeTerms] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [apiError, setApiError] = useState("");
   const [success, setSuccess] = useState(false);
 
   const navigate = useNavigate();
@@ -42,74 +89,47 @@ function Register() {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      email: "",
+      phone: "",
+      password: "",
+      confirmPassword: "",
+      terms: false,
+    },
+    validationSchema,
+    onSubmit: async (values) => {
+      setApiError("");
+      setLoading(true);
 
-  const validateForm = () => {
-    const { name, email, password, confirmPassword } = formData;
+      try {
+        const { error: authError } = await supabase.auth.signUp({
+          email: values.email,
+          password: values.password,
+          options: {
+            data: { full_name: values.name, phone: values.phone },
+          },
+        });
 
-    if (!name || !email || !password || !confirmPassword) {
-      setError("Please fill in all required fields.");
-      return false;
-    }
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      setError("Please enter a valid email address.");
-      return false;
-    }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters long.");
-      return false;
-    }
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return false;
-    }
-    if (!agreeTerms) {
-      setError("You must agree to the Terms & Conditions.");
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-
-    if (!validateForm()) return;
-
-    setLoading(true);
-
-    const { name, email, password, phone } = formData;
-
-    try {
-      const { error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { full_name: name, phone },
-        },
-      });
-
-      if (authError) {
-        setError(authError.message);
-      } else {
-        setSuccess(true);
-        setTimeout(() => navigate("/login"), 2000);
+        if (authError) {
+          setApiError(authError.message);
+        } else {
+          setSuccess(true);
+          setTimeout(() => navigate("/login"), 2000);
+        }
+      } catch (err) {
+        setApiError("Something went wrong. Please try again.");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+  });
 
   // Social login handlers
   const handleSocialLogin = async (provider) => {
     setLoading(true);
-    setError("");
+    setApiError("");
     try {
       const { error: socialError } = await supabase.auth.signInWithOAuth({
         provider: provider,
@@ -119,10 +139,10 @@ function Register() {
       });
 
       if (socialError) {
-        setError(`${provider} signup failed: ${socialError.message}`);
+        setApiError(`${provider} signup failed: ${socialError.message}`);
       }
     } catch (err) {
-      setError(`${provider} signup error: ${err.message}`);
+      setApiError(`${provider} signup error: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -162,15 +182,15 @@ function Register() {
               <p>Join StoreHub today</p>
             </div>
 
-            {/* Error Message */}
-            {error && (
+            {/* API Error Message */}
+            {apiError && (
               <div className="register-error">
-                <span>{error}</span>
+                <span>{apiError}</span>
               </div>
             )}
 
             {/* Register Form */}
-            <form onSubmit={handleSubmit} className="register-form">
+            <form onSubmit={formik.handleSubmit} className="register-form">
 
               {/* Full Name */}
               <div className="form-group">
@@ -183,10 +203,14 @@ function Register() {
                   id="name"
                   name="name"
                   placeholder="Enter your full name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
+                  value={formik.values.name}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={formik.touched.name && formik.errors.name ? "input-error" : ""}
                 />
+                {formik.touched.name && formik.errors.name && (
+                  <p className="field-error">{formik.errors.name}</p>
+                )}
               </div>
 
               {/* Email */}
@@ -200,10 +224,14 @@ function Register() {
                   id="email"
                   name="email"
                   placeholder="Enter your email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  required
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={formik.touched.email && formik.errors.email ? "input-error" : ""}
                 />
+                {formik.touched.email && formik.errors.email && (
+                  <p className="field-error">{formik.errors.email}</p>
+                )}
               </div>
 
               {/* Phone (Optional) */}
@@ -217,9 +245,14 @@ function Register() {
                   id="phone"
                   name="phone"
                   placeholder="Enter your phone number"
-                  value={formData.phone}
-                  onChange={handleChange}
+                  value={formik.values.phone}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={formik.touched.phone && formik.errors.phone ? "input-error" : ""}
                 />
+                {formik.touched.phone && formik.errors.phone && (
+                  <p className="field-error">{formik.errors.phone}</p>
+                )}
               </div>
 
               {/* Password */}
@@ -234,9 +267,10 @@ function Register() {
                     id="password"
                     name="password"
                     placeholder="Create a password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
+                    value={formik.values.password}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className={formik.touched.password && formik.errors.password ? "input-error" : ""}
                   />
                   <button
                     type="button"
@@ -247,7 +281,11 @@ function Register() {
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
-                <p className="password-hint">Minimum 6 characters</p>
+                {formik.touched.password && formik.errors.password ? (
+                  <p className="field-error">{formik.errors.password}</p>
+                ) : (
+                  <p className="password-hint">Between 6 and 64 characters</p>
+                )}
               </div>
 
               {/* Confirm Password */}
@@ -262,9 +300,10 @@ function Register() {
                     id="confirmPassword"
                     name="confirmPassword"
                     placeholder="Confirm your password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    required
+                    value={formik.values.confirmPassword}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className={formik.touched.confirmPassword && formik.errors.confirmPassword ? "input-error" : ""}
                   />
                   <button
                     type="button"
@@ -275,6 +314,9 @@ function Register() {
                     {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
+                {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+                  <p className="field-error">{formik.errors.confirmPassword}</p>
+                )}
               </div>
 
               {/* Terms & Conditions */}
@@ -282,14 +324,19 @@ function Register() {
                 <label className="checkbox-label">
                   <input
                     type="checkbox"
-                    checked={agreeTerms}
-                    onChange={(e) => setAgreeTerms(e.target.checked)}
+                    name="terms"
+                    checked={formik.values.terms}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
                   />
                   <span>
                     I agree to the <Link to="/terms">Terms & Conditions</Link>{" "}
                     and <Link to="/privacy">Privacy Policy</Link>
                   </span>
                 </label>
+                {formik.touched.terms && formik.errors.terms && (
+                  <p className="field-error">{formik.errors.terms}</p>
+                )}
               </div>
 
               {/* Submit Button */}
@@ -303,7 +350,6 @@ function Register() {
 
             </form>
 
-    
             {/* Login Link */}
             <div className="login-link">
               <p>
@@ -313,7 +359,7 @@ function Register() {
 
           </div>
         </div>
-        
+
       </div>
     </PageTransition>
   );

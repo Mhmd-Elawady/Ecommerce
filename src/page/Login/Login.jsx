@@ -1,24 +1,60 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import {
   FaEnvelope,
   FaLock,
   FaEye,
   FaEyeSlash,
-  FaGoogle,
 } from "react-icons/fa";
 import PageTransition from "../../components/PageTransition";
 import { supabase } from "../../supabaseClient";
 import { useAuth } from "../../hooks/useAuth";
 import "./Login.css";
 
+const blockedDomains = [
+  "mailinator.com", "tempmail.com", "guerrillamail.com", "10minutemail.com",
+  "throwam.com", "yopmail.com", "trashmail.com", "fakeinbox.com",
+  "sharklasers.com", "guerrillamailblock.com", "grr.la", "guerrillamail.info",
+  "spam4.me", "dispostable.com", "mailnull.com", "spamgourmet.com",
+];
+
+const validationSchema = Yup.object({
+  email: Yup.string()
+    .required("Email is required")
+    .max(254, "Email must not exceed 254 characters")
+    .test("no-spaces", "Email must not contain spaces", (value) => {
+      return value ? !/\s/.test(value) : true;
+    })
+    .test("valid-tld", "Email must have a valid domain extension (.com, .net, etc.)", (value) => {
+      if (!value) return true;
+      const tldRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+      return tldRegex.test(value);
+    })
+    .test("no-special-chars", "Email contains invalid characters", (value) => {
+      if (!value) return true;
+      const validEmailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+      return validEmailRegex.test(value);
+    })
+    .test("no-blocked-domain", "This email domain is not allowed", (value) => {
+      if (!value) return true;
+      const domain = value.split("@")[1]?.toLowerCase();
+      return !blockedDomains.includes(domain);
+    })
+    .email("Please enter a valid email address"),
+
+  password: Yup.string()
+    .required("Password is required")
+    .min(6, "Password must be at least 6 characters")
+    .max(64, "Password must not exceed 64 characters"),
+});
+
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [apiError, setApiError] = useState("");
+
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
 
@@ -29,39 +65,40 @@ function Login() {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+    validationSchema,
+    onSubmit: async (values) => {
+      setApiError("");
+      setLoading(true);
 
-    if (!email || !password) {
-      setError("Please fill in all fields.");
-      return;
-    }
+      try {
+        const { error: authError } = await supabase.auth.signInWithPassword({
+          email: values.email,
+          password: values.password,
+        });
 
-    setLoading(true);
-
-    try {
-      const { error: authError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (authError) {
-        setError(authError.message);
-      } else {
-        navigate("/");
+        if (authError) {
+          setApiError(authError.message);
+        } else {
+          navigate("/");
+        }
+      } catch (err) {
+        setApiError("Something went wrong. Please try again.");
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+  });
 
   // Social login handlers
   const handleSocialLogin = async (provider) => {
     setLoading(true);
-    setError("");
+    setApiError("");
     try {
       const { error: socialError } = await supabase.auth.signInWithOAuth({
         provider: provider,
@@ -71,10 +108,10 @@ function Login() {
       });
 
       if (socialError) {
-        setError(`${provider} login failed: ${socialError.message}`);
+        setApiError(`${provider} login failed: ${socialError.message}`);
       }
     } catch (err) {
-      setError(`${provider} login error: ${err.message}`);
+      setApiError(`${provider} login error: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -95,15 +132,15 @@ function Login() {
               <p>Sign in to continue to StoreHub</p>
             </div>
 
-            {/* Error Message */}
-            {error && (
+            {/* API Error Message */}
+            {apiError && (
               <div className="login-error">
-                <span>{error}</span>
+                <span>{apiError}</span>
               </div>
             )}
 
             {/* Login Form */}
-            <form onSubmit={handleSubmit} className="login-form">
+            <form onSubmit={formik.handleSubmit} className="login-form">
 
               {/* Email */}
               <div className="form-group">
@@ -114,11 +151,16 @@ function Login() {
                 <input
                   type="email"
                   id="email"
+                  name="email"
                   placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className={formik.touched.email && formik.errors.email ? "input-error" : ""}
                 />
+                {formik.touched.email && formik.errors.email && (
+                  <p className="field-error">{formik.errors.email}</p>
+                )}
               </div>
 
               {/* Password */}
@@ -131,10 +173,12 @@ function Login() {
                   <input
                     type={showPassword ? "text" : "password"}
                     id="password"
+                    name="password"
                     placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
+                    value={formik.values.password}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    className={formik.touched.password && formik.errors.password ? "input-error" : ""}
                   />
                   <button
                     type="button"
@@ -145,6 +189,9 @@ function Login() {
                     {showPassword ? <FaEyeSlash /> : <FaEye />}
                   </button>
                 </div>
+                {formik.touched.password && formik.errors.password && (
+                  <p className="field-error">{formik.errors.password}</p>
+                )}
               </div>
 
               {/* Remember Me & Forgot Password */}
@@ -152,8 +199,9 @@ function Login() {
                 <label className="checkbox-label">
                   <input
                     type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
+                    name="rememberMe"
+                    checked={formik.values.rememberMe}
+                    onChange={formik.handleChange}
                   />
                   <span>Remember me</span>
                 </label>
@@ -173,7 +221,6 @@ function Login() {
 
             </form>
 
-        
             {/* Sign Up Link */}
             <div className="signup-link">
               <p>
@@ -184,7 +231,7 @@ function Login() {
 
           </div>
         </div>
-   
+
       </div>
     </PageTransition>
   );

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import {
   FaEnvelope, FaArrowLeft, FaCheckCircle, FaTimesCircle, FaPaperPlane,
 } from "react-icons/fa";
@@ -8,46 +10,66 @@ import Footer from "../../components/Footer/Footer";
 import { supabase } from "../../supabaseClient";
 import "./Login.css";
 
-const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+const blockedDomains = [
+  "mailinator.com", "tempmail.com", "guerrillamail.com", "10minutemail.com",
+  "throwam.com", "yopmail.com", "trashmail.com", "fakeinbox.com",
+  "sharklasers.com", "guerrillamailblock.com", "grr.la", "guerrillamail.info",
+  "spam4.me", "dispostable.com", "mailnull.com", "spamgourmet.com",
+];
+
+const validationSchema = Yup.object({
+  email: Yup.string()
+    .required("Email is required")
+    .max(254, "Email must not exceed 254 characters")
+    .test("no-spaces", "Email must not contain spaces", (value) => {
+      return value ? !/\s/.test(value) : true;
+    })
+    .test("valid-tld", "Email must have a valid domain extension (.com, .net, etc.)", (value) => {
+      if (!value) return true;
+      const tldRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+      return tldRegex.test(value);
+    })
+    .test("no-special-chars", "Email contains invalid characters", (value) => {
+      if (!value) return true;
+      const validEmailRegex = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
+      return validEmailRegex.test(value);
+    })
+    .test("no-blocked-domain", "This email domain is not allowed", (value) => {
+      if (!value) return true;
+      const domain = value.split("@")[1]?.toLowerCase();
+      return !blockedDomains.includes(domain);
+    })
+    .email("Please enter a valid email address"),
+});
 
 function ForgotPassword() {
-  const [email, setEmail]     = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError]     = useState("");
+  const [apiError, setApiError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [sentEmail, setSentEmail] = useState("");
 
-  const handleChange = (e) => {
-    setEmail(e.target.value);
-    if (error) setError(""); // clear error on type
-  };
+  const formik = useFormik({
+    initialValues: { email: "" },
+    validationSchema,
+    onSubmit: async (values) => {
+      setApiError("");
+      setLoading(true);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-
-    if (!email.trim()) {
-      setError("Please enter your email address.");
-      return;
-    }
-    if (!isValidEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(
-        email.trim(),
-        { redirectTo: `${window.location.origin}/reset-password` }
-      );
-      if (resetError) throw resetError;
-      setSuccess(true);
-    } catch (err) {
-      setError(err?.message || "Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+      try {
+        const { error: resetError } = await supabase.auth.resetPasswordForEmail(
+          values.email.trim(),
+          { redirectTo: `${window.location.origin}/reset-password` }
+        );
+        if (resetError) throw resetError;
+        setSentEmail(values.email);
+        setSuccess(true);
+      } catch (err) {
+        setApiError(err?.message || "Something went wrong. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    },
+  });
 
   // ── Success screen ───────────────────────────────────────────────────────────
   if (success) {
@@ -63,14 +85,14 @@ function ForgotPassword() {
                 <h3>Check Your Email</h3>
                 <p>
                   We sent a password reset link to{" "}
-                  <strong className="success-email">{email}</strong>.
+                  <strong className="success-email">{sentEmail}</strong>.
                   <br />
                   Check your inbox (and spam folder, just in case).
                 </p>
                 <button
                   className="login-button"
                   style={{ marginTop: 8 }}
-                  onClick={() => { setSuccess(false); setEmail(""); }}
+                  onClick={() => { setSuccess(false); formik.resetForm(); }}
                 >
                   Try a different email
                 </button>
@@ -100,14 +122,14 @@ function ForgotPassword() {
               <p>Enter your email to receive reset instructions</p>
             </div>
 
-            {error && (
+            {apiError && (
               <div className="login-error" role="alert" aria-live="assertive">
                 <FaTimesCircle style={{ flexShrink: 0 }} />
-                <span>{error}</span>
+                <span>{apiError}</span>
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="login-form" noValidate>
+            <form onSubmit={formik.handleSubmit} className="login-form" noValidate>
               <div className="form-group">
                 <label htmlFor="email">
                   <FaEnvelope className="input-icon" />
@@ -118,19 +140,23 @@ function ForgotPassword() {
                   id="email"
                   name="email"
                   placeholder="Enter your email"
-                  value={email}
-                  onChange={handleChange}
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
                   disabled={loading}
                   autoComplete="email"
                   autoFocus
-                  required
+                  className={formik.touched.email && formik.errors.email ? "input-error" : ""}
                 />
+                {formik.touched.email && formik.errors.email && (
+                  <p className="field-error">{formik.errors.email}</p>
+                )}
               </div>
 
               <button
                 type="submit"
                 className="login-button"
-                disabled={loading || !email.trim()}
+                disabled={loading || !formik.values.email.trim()}
                 aria-busy={loading}
               >
                 {loading ? (
